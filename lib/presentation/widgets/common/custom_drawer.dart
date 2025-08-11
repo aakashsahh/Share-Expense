@@ -8,6 +8,8 @@ import 'package:share_expenses/presentation/bloc/expense/bloc/expense_bloc.dart'
 import 'package:share_expenses/presentation/bloc/expense/bloc/expense_event.dart';
 import 'package:share_expenses/presentation/bloc/fund/bloc/fund_bloc.dart';
 import 'package:share_expenses/presentation/bloc/fund/bloc/fund_event.dart';
+import 'package:share_expenses/presentation/bloc/member/bloc/member_bloc.dart';
+import 'package:share_expenses/presentation/bloc/member/bloc/member_event.dart';
 import 'package:share_expenses/presentation/pages/dashboard/dashboard_page.dart';
 import 'package:share_expenses/presentation/pages/member/member_list_page.dart';
 
@@ -176,6 +178,7 @@ class CustomDrawer extends StatelessWidget {
         context.read<DashboardBloc>().add(LoadDashboardData());
         context.read<ExpenseBloc>().add(LoadExpenses());
         context.read<FundBloc>().add(LoadFunds());
+        context.read<MemberBloc>().add(LoadMembers());
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('All data has been reset successfully')),
         );
