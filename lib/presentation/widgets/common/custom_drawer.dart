@@ -18,7 +18,7 @@ class CustomDrawer extends StatelessWidget {
         children: [
           // Drawer Header
           Container(
-            height: 200,
+            height: 240,
             width: double.infinity,
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -48,7 +48,7 @@ class CustomDrawer extends StatelessWidget {
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      'Expense Sharing',
+                      'Share Expense',
                       style: theme.textTheme.titleLarge?.copyWith(
                         color: theme.colorScheme.onPrimary,
                         fontWeight: FontWeight.bold,
