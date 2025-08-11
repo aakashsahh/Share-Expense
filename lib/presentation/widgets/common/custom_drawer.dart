@@ -4,6 +4,10 @@ import 'package:share_expenses/core/databases/database_helper.dart';
 import 'package:share_expenses/injection_container.dart' as di;
 import 'package:share_expenses/presentation/bloc/dashboard/bloc/dashboard_bloc.dart';
 import 'package:share_expenses/presentation/bloc/dashboard/bloc/dashboard_event.dart';
+import 'package:share_expenses/presentation/bloc/expense/bloc/expense_bloc.dart';
+import 'package:share_expenses/presentation/bloc/expense/bloc/expense_event.dart';
+import 'package:share_expenses/presentation/bloc/fund/bloc/fund_bloc.dart';
+import 'package:share_expenses/presentation/bloc/fund/bloc/fund_event.dart';
 import 'package:share_expenses/presentation/pages/dashboard/dashboard_page.dart';
 import 'package:share_expenses/presentation/pages/member/member_list_page.dart';
 
@@ -170,6 +174,8 @@ class CustomDrawer extends StatelessWidget {
 
       if (context.mounted) {
         context.read<DashboardBloc>().add(LoadDashboardData());
+        context.read<ExpenseBloc>().add(LoadExpenses());
+        context.read<FundBloc>().add(LoadFunds());
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('All data has been reset successfully')),
         );
