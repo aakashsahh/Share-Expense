@@ -34,6 +34,12 @@ class _DashboardPageState extends State<DashboardPage>
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    context.read<DashboardBloc>().add(LoadDashboardData());
+  }
+
+  @override
   void dispose() {
     _tabController.dispose();
     super.dispose();
