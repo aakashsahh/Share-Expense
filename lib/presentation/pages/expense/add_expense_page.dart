@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:share_expenses/presentation/bloc/dashboard/bloc/dashboard_bloc.dart';
+import 'package:share_expenses/presentation/bloc/dashboard/bloc/dashboard_event.dart';
 import 'package:share_expenses/presentation/bloc/expense/bloc/expense_bloc.dart';
 import 'package:share_expenses/presentation/bloc/expense/bloc/expense_event.dart';
 import 'package:share_expenses/presentation/bloc/member/bloc/member_bloc.dart';
@@ -226,6 +228,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
     } else {
       context.read<ExpenseBloc>().add(AddExpense(expense, _selectedMembers));
     }
+    context.read<DashboardBloc>().add(LoadDashboardData());
 
     Navigator.of(context).pop();
   }

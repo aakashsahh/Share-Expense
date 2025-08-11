@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:share_expenses/presentation/bloc/dashboard/bloc/dashboard_bloc.dart';
+import 'package:share_expenses/presentation/bloc/dashboard/bloc/dashboard_event.dart';
 import 'package:share_expenses/presentation/bloc/fund/bloc/fund_bloc.dart';
 import 'package:share_expenses/presentation/bloc/fund/bloc/fund_event.dart';
 import 'package:share_expenses/presentation/bloc/member/bloc/member_bloc.dart';
@@ -251,6 +253,8 @@ class _AddFundPageState extends State<AddFundPage> {
       context.read<FundBloc>().add(AddFund(fund));
     }
 
-    Navigator.of(context).pop();
+    // After saving an expense or fund:
+    context.read<DashboardBloc>().add(LoadDashboardData());
+    Navigator.pop(context);
   }
 }

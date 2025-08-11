@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:share_expenses/presentation/bloc/dashboard/bloc/dashboard_bloc.dart';
+import 'package:share_expenses/presentation/bloc/dashboard/bloc/dashboard_event.dart';
 import 'package:share_expenses/presentation/bloc/fund/bloc/fund_bloc.dart';
 import 'package:share_expenses/presentation/bloc/fund/bloc/fund_event.dart';
 import 'package:share_expenses/presentation/bloc/fund/bloc/fund_state.dart';
@@ -101,6 +103,7 @@ class FundTab extends StatelessWidget {
           TextButton(
             onPressed: () {
               context.read<FundBloc>().add(DeleteFund(fundId));
+              context.read<DashboardBloc>().add(LoadDashboardData());
               Navigator.of(context).pop();
             },
             style: TextButton.styleFrom(
