@@ -102,8 +102,8 @@ class _DashboardPageState extends State<DashboardPage>
               indicatorColor: Theme.of(context).colorScheme.primary,
               tabs: const [
                 Tab(icon: Icon(Icons.receipt_long), text: 'Expenses'),
-                Tab(icon: Icon(Icons.account_balance_wallet), text: 'Funds'),
-                Tab(icon: Icon(Icons.analytics), text: 'Reports'),
+                Tab(icon: Icon(Icons.wallet), text: 'Funds'),
+                Tab(icon: Icon(Icons.analytics_outlined), text: 'Reports'),
               ],
             ),
           ),
