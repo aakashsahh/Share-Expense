@@ -11,8 +11,19 @@ import '../../../widgets/common/loading_widget.dart';
 import '../../expense/add_expense_page.dart';
 import 'expense_item.dart';
 
-class ExpenseTab extends StatelessWidget {
+class ExpenseTab extends StatefulWidget {
   const ExpenseTab({super.key});
+
+  @override
+  State<ExpenseTab> createState() => _ExpenseTabState();
+}
+
+class _ExpenseTabState extends State<ExpenseTab> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<ExpenseBloc>().add(LoadExpenses());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,12 +96,16 @@ class ExpenseTab extends StatelessWidget {
         },
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Theme.of(context).colorScheme.error,
         onPressed: () {
           Navigator.of(context).push(
             MaterialPageRoute(builder: (context) => const AddExpensePage()),
           );
         },
-        child: const Icon(Icons.add),
+        child: Icon(
+          Icons.receipt_long,
+          color: Theme.of(context).colorScheme.onError,
+        ),
       ),
     );
   }
