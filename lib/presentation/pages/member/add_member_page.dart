@@ -155,7 +155,7 @@ class _AddMemberPageState extends State<AddMemberPage> {
                   end: Alignment.bottomRight,
                   colors: [
                     theme.colorScheme.primary,
-                    theme.colorScheme.primary.withOpacity(0.8),
+                    theme.colorScheme.primary.withValues(alpha: 0.8),
                   ],
                 ),
               ),
@@ -186,7 +186,9 @@ class _AddMemberPageState extends State<AddMemberPage> {
                       Text(
                         'Manage your group expenses',
                         style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.onPrimary.withOpacity(0.9),
+                          color: theme.colorScheme.onPrimary.withValues(
+                            alpha: 0.9,
+                          ),
                         ),
                       ),
                     ],

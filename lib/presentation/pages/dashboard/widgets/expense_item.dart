@@ -64,7 +64,7 @@ class ExpenseItem extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: AppColors.getCategoryColor(
                         expense.category,
-                      ).withOpacity(0.2),
+                      ).withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Icon(
@@ -109,7 +109,7 @@ class ExpenseItem extends StatelessWidget {
                               decoration: BoxDecoration(
                                 color: AppColors.getCategoryColor(
                                   expense.category,
-                                ).withOpacity(0.1),
+                                ).withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: Text(

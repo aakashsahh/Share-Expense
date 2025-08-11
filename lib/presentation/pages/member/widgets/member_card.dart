@@ -138,7 +138,7 @@ class MemberCard extends StatelessWidget {
                           'Added ${AppDateUtils.getRelativeTime(member.createdAt)}',
                           style: theme.textTheme.labelSmall?.copyWith(
                             color: theme.colorScheme.onSurfaceVariant
-                                .withOpacity(0.8),
+                                .withValues(alpha: 0.8),
                           ),
                         ),
                       ],

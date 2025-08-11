@@ -65,7 +65,7 @@ class FundItem extends StatelessWidget {
                     width: 48,
                     height: 48,
                     decoration: BoxDecoration(
-                      color: theme.colorScheme.tertiary.withOpacity(0.2),
+                      color: theme.colorScheme.tertiary.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Icon(
@@ -120,7 +120,7 @@ class FundItem extends StatelessWidget {
                                     ),
                                     decoration: BoxDecoration(
                                       color: theme.colorScheme.tertiaryContainer
-                                          .withOpacity(0.5),
+                                          .withValues(alpha: 0.5),
                                       borderRadius: BorderRadius.circular(4),
                                     ),
                                     child: Text(

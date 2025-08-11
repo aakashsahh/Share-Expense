@@ -31,8 +31,8 @@ class CategorySelector extends StatelessWidget {
               label: Text(category),
               selected: isSelected,
               onSelected: (_) => onCategorySelected(category),
-              backgroundColor: categoryColor.withOpacity(0.1),
-              selectedColor: categoryColor.withOpacity(0.2),
+              backgroundColor: categoryColor.withValues(alpha: 0.1),
+              selectedColor: categoryColor.withValues(alpha: 0.2),
               checkmarkColor: categoryColor,
               labelStyle: TextStyle(
                 color: isSelected ? categoryColor : null,

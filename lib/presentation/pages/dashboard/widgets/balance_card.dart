@@ -36,7 +36,7 @@ class _BalanceCardState extends State<BalanceCard> {
               end: Alignment.bottomRight,
               colors: [
                 theme.colorScheme.primaryContainer,
-                theme.colorScheme.primaryContainer.withOpacity(0.8),
+                theme.colorScheme.primaryContainer.withValues(alpha: 0.8),
               ],
             ),
           ),
@@ -81,7 +81,7 @@ class _BalanceCardState extends State<BalanceCard> {
                   Container(
                     width: 1,
                     height: 40,
-                    color: theme.colorScheme.outline.withOpacity(0.3),
+                    color: theme.colorScheme.outline.withValues(alpha: 0.3),
                   ),
                   Expanded(
                     child: _buildStatItem(
@@ -120,7 +120,9 @@ class _BalanceCardState extends State<BalanceCard> {
             Text(
               label,
               style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onPrimaryContainer.withOpacity(0.8),
+                color: theme.colorScheme.onPrimaryContainer.withValues(
+                  alpha: 0.8,
+                ),
               ),
             ),
           ],
