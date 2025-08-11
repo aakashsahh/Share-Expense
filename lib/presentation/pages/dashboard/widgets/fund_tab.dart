@@ -11,8 +11,19 @@ import '../../../widgets/common/loading_widget.dart';
 import '../../fund/add_fund_page.dart';
 import 'fund_item.dart';
 
-class FundTab extends StatelessWidget {
+class FundTab extends StatefulWidget {
   const FundTab({super.key});
+
+  @override
+  State<FundTab> createState() => _FundTabState();
+}
+
+class _FundTabState extends State<FundTab> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<FundBloc>().add(LoadFunds());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +54,7 @@ class FundTab extends StatelessWidget {
           if (state is FundLoaded) {
             if (state.funds.isEmpty) {
               return const EmptyStateWidget(
-                icon: Icons.account_balance_wallet,
+                icon: Icons.wallet,
                 title: 'No Funds Yet',
                 subtitle: 'Add your first fund contribution',
               );
@@ -79,12 +90,16 @@ class FundTab extends StatelessWidget {
         },
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Theme.of(context).colorScheme.tertiary,
         onPressed: () {
           Navigator.of(
             context,
           ).push(MaterialPageRoute(builder: (context) => const AddFundPage()));
         },
-        child: const Icon(Icons.add),
+        child: Icon(
+          Icons.wallet,
+          color: Theme.of(context).colorScheme.onTertiary,
+        ),
       ),
     );
   }
