@@ -129,7 +129,10 @@ class _AddMemberPageState extends State<AddMemberPage> {
         title: Text(_isEditing ? 'Edit Member' : 'Add Member'),
         actions: [
           TextButton(
-            onPressed: _saveMember,
+            onPressed: () {
+              _saveMember();
+              Navigator.pop(context);
+            },
             child: Text(
               _isEditing ? 'Update' : 'Save',
               style: TextStyle(
