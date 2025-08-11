@@ -228,6 +228,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
     } else {
       context.read<ExpenseBloc>().add(AddExpense(expense, _selectedMembers));
     }
+    context.read<ExpenseBloc>().add(LoadExpenses());
     context.read<DashboardBloc>().add(LoadDashboardData());
 
     Navigator.of(context).pop();
