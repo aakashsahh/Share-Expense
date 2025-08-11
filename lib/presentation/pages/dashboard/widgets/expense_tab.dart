@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:share_expenses/presentation/bloc/dashboard/bloc/dashboard_bloc.dart';
+import 'package:share_expenses/presentation/bloc/dashboard/bloc/dashboard_event.dart';
 import 'package:share_expenses/presentation/bloc/expense/bloc/expense_bloc.dart';
 import 'package:share_expenses/presentation/bloc/expense/bloc/expense_event.dart';
 import 'package:share_expenses/presentation/bloc/expense/bloc/expense_state.dart';
@@ -67,13 +69,19 @@ class ExpenseTab extends StatelessWidget {
                 },
               ),
             );
+          } else if (state is ExpenseError) {
+            return EmptyStateWidget(
+              icon: Icons.error,
+              title: state.message,
+              subtitle: 'Pull to refresh and try again',
+            );
+          } else {
+            return const EmptyStateWidget(
+              icon: Icons.error,
+              title: 'Something went wrong',
+              subtitle: 'Pull to refresh and try again',
+            );
           }
-
-          return const EmptyStateWidget(
-            icon: Icons.error,
-            title: 'Something went wrong',
-            subtitle: 'Pull to refresh and try again',
-          );
         },
       ),
       floatingActionButton: FloatingActionButton(
@@ -101,6 +109,7 @@ class ExpenseTab extends StatelessWidget {
           TextButton(
             onPressed: () {
               context.read<ExpenseBloc>().add(DeleteExpense(expenseId));
+              context.read<DashboardBloc>().add(LoadDashboardData());
               Navigator.of(context).pop();
             },
             style: TextButton.styleFrom(
