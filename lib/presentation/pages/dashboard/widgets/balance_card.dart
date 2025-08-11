@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/utils/currency_formatter.dart';
 
-class BalanceCard extends StatelessWidget {
+class BalanceCard extends StatefulWidget {
   final double totalBalance;
   final double totalExpenses;
   final double totalFunds;
@@ -14,6 +14,11 @@ class BalanceCard extends StatelessWidget {
     required this.totalFunds,
   });
 
+  @override
+  State<BalanceCard> createState() => _BalanceCardState();
+}
+
+class _BalanceCardState extends State<BalanceCard> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -48,9 +53,9 @@ class BalanceCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    CurrencyFormatter.format(totalBalance),
+                    CurrencyFormatter.format(widget.totalBalance),
                     style: theme.textTheme.headlineLarge?.copyWith(
-                      color: totalBalance >= 0
+                      color: widget.totalBalance >= 0
                           ? theme.colorScheme.tertiary
                           : theme.colorScheme.error,
                       fontWeight: FontWeight.bold,
@@ -68,7 +73,7 @@ class BalanceCard extends StatelessWidget {
                     child: _buildStatItem(
                       context,
                       'Total Expenses',
-                      totalExpenses,
+                      widget.totalExpenses,
                       Icons.trending_down,
                       theme.colorScheme.error,
                     ),
@@ -82,7 +87,7 @@ class BalanceCard extends StatelessWidget {
                     child: _buildStatItem(
                       context,
                       'Total Funds',
-                      totalFunds,
+                      widget.totalFunds,
                       Icons.trending_up,
                       theme.colorScheme.tertiary,
                     ),
