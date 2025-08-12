@@ -31,14 +31,15 @@ class _BalanceCardState extends State<BalanceCard> {
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                theme.colorScheme.primaryContainer,
-                theme.colorScheme.primaryContainer.withValues(alpha: 0.8),
-              ],
-            ),
+            color: theme.colorScheme.surfaceContainer,
+            // gradient: LinearGradient(
+            //   begin: Alignment.topLeft,
+            //   end: Alignment.bottomRight,
+            //   colors: [
+            //     theme.colorScheme.primaryContainer,
+            //     theme.colorScheme.primaryContainer.withValues(alpha: 0.8),
+            //   ],
+            // ),
           ),
           child: Column(
             children: [
@@ -115,11 +116,11 @@ class _BalanceCardState extends State<BalanceCard> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 16, color: color),
+            Icon(icon, size: 20, color: color),
             const SizedBox(width: 4),
             Text(
               label,
-              style: theme.textTheme.bodySmall?.copyWith(
+              style: theme.textTheme.bodyLarge?.copyWith(
                 color: theme.colorScheme.onPrimaryContainer.withValues(
                   alpha: 0.8,
                 ),
