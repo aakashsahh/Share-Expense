@@ -71,7 +71,22 @@ class _FundTabState extends State<FundTab> {
                   return FundItem(
                     fund: state.funds[index],
                     onTap: () {
-                      // Navigate to fund details or edit
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              AddFundPage(fund: state.funds[index]),
+                        ),
+                      );
+                    },
+                    onEdit: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              AddFundPage(fund: state.funds[index]),
+                        ),
+                      );
                     },
                     onDelete: () {
                       _showDeleteDialog(context, state.funds[index].id);
