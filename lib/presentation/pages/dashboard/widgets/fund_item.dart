@@ -69,7 +69,7 @@ class FundItem extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Icon(
-                      Icons.account_balance_wallet,
+                      Icons.wallet,
                       color: theme.colorScheme.tertiary,
                       size: 24,
                     ),

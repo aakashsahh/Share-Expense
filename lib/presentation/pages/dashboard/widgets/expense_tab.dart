@@ -71,7 +71,25 @@ class _ExpenseTabState extends State<ExpenseTab> {
                   return ExpenseItem(
                     expense: state.expenses[index],
                     onTap: () {
-                      // Navigate to expense details or edit
+                      // Open edit page
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => AddExpensePage(
+                            expense: state
+                                .expenses[index], // Pass the expense to edit
+                          ),
+                        ),
+                      );
+                    },
+                    onEdit: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              AddExpensePage(expense: state.expenses[index]),
+                        ),
+                      );
                     },
                     onDelete: () {
                       _showDeleteDialog(context, state.expenses[index].id);
