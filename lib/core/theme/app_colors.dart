@@ -11,9 +11,11 @@ class AppColors {
     onSecondary: Color(0xFFFFFFFF),
     secondaryContainer: Color(0xFFDAE2FF),
     onSecondaryContainer: Color(0xFF001946),
-    tertiary: Color(0xFF34C759),
-    onTertiary: Color(0xFFFFFFFF),
-    tertiaryContainer: Color(0xFFB9F0B8),
+    tertiary: Color(
+      0xFF28A745,
+    ), // Fresh, natural green (slightly deeper than Apple green)
+    onTertiary: Color(0xFFFFFFFF), // White for contrast
+    tertiaryContainer: Color(0xFFD2F4D7), // Soft mint background for highlights
     onTertiaryContainer: Color(0xFF002107),
     error: Color(0xFFBA1A1A),
     errorContainer: Color(0xFFFFDAD6),
@@ -43,9 +45,11 @@ class AppColors {
     onSecondary: Color(0xFF162E60),
     secondaryContainer: Color(0xFF2F4578),
     onSecondaryContainer: Color(0xFFDAE2FF),
-    tertiary: Color(0xFF9ED49D),
-    onTertiary: Color(0xFF033912),
-    tertiaryContainer: Color(0xFF1F5027),
+    tertiary: Color(
+      0xFF28A745,
+    ), // Fresh, natural green (slightly deeper than Apple green)
+    onTertiary: Color(0xFFFFFFFF), // White for contrast
+    tertiaryContainer: Color(0xFFD2F4D7), // Soft mint background for highlights
     onTertiaryContainer: Color(0xFFB9F0B8),
     error: Color(0xFFFFB4AB),
     errorContainer: Color(0xFF93000A),
