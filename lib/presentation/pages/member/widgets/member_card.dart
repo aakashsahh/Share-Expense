@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
-
-import '../../../../core/utils/date_utils.dart';
-import '../../../../data/models/member.dart';
+import 'package:share_expenses/data/models/member.dart';
 
 class MemberCard extends StatelessWidget {
   final Member member;
+  final double balance;
+  final double funds;
+  final double expenses;
   final VoidCallback? onTap;
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
@@ -13,6 +13,9 @@ class MemberCard extends StatelessWidget {
   const MemberCard({
     super.key,
     required this.member,
+    required this.balance,
+    required this.funds,
+    required this.expenses,
     this.onTap,
     this.onEdit,
     this.onDelete,
@@ -21,141 +24,139 @@ class MemberCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isPositive = balance >= 0;
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Slidable(
-        endActionPane: ActionPane(
-          motion: const ScrollMotion(),
-          children: [
-            if (onEdit != null)
-              SlidableAction(
-                onPressed: (_) => onEdit!(),
-                backgroundColor: theme.colorScheme.primary,
-                foregroundColor: theme.colorScheme.onPrimary,
-                icon: Icons.edit,
-                label: 'Edit',
-              ),
-            if (onDelete != null)
-              SlidableAction(
-                onPressed: (_) => onDelete!(),
-                backgroundColor: theme.colorScheme.error,
-                foregroundColor: theme.colorScheme.onError,
-                icon: Icons.delete,
-                label: 'Delete',
-              ),
-          ],
-        ),
-        child: Card(
-          elevation: 1,
-          child: InkWell(
-            onTap: onTap,
-            borderRadius: BorderRadius.circular(12),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  // Avatar
-                  CircleAvatar(
-                    radius: 24,
-                    backgroundColor: theme.colorScheme.primaryContainer,
-                    child: member.imagePath != null
-                        ? ClipRRect(
-                            borderRadius: BorderRadius.circular(24),
-                            child: Image.asset(
-                              member.imagePath!,
-                              width: 48,
-                              height: 48,
-                              fit: BoxFit.cover,
-                            ),
-                          )
-                        : Text(
-                            member.name.substring(0, 1).toUpperCase(),
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: theme.colorScheme.onPrimaryContainer,
-                            ),
-                          ),
-                  ),
-
-                  const SizedBox(width: 16),
-
-                  // Member Details
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          member.name,
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        if (member.phone != null) ...[
-                          const SizedBox(height: 2),
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.phone,
-                                size: 14,
-                                color: theme.colorScheme.onSurfaceVariant,
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        elevation: 3,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(16),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    // Avatar
+                    CircleAvatar(
+                      radius: 24,
+                      backgroundColor: theme.colorScheme.primaryContainer,
+                      backgroundImage: member.imagePath != null
+                          ? AssetImage(member.imagePath!)
+                          : null,
+                      child: member.imagePath == null
+                          ? Text(
+                              member.name.substring(0, 1).toUpperCase(),
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: theme.colorScheme.onPrimaryContainer,
                               ),
-                              const SizedBox(width: 4),
-                              Text(
-                                member.phone!,
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                  color: theme.colorScheme.onSurfaceVariant,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                        if (member.email != null) ...[
-                          const SizedBox(height: 2),
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.email,
-                                size: 14,
-                                color: theme.colorScheme.onSurfaceVariant,
-                              ),
-                              const SizedBox(width: 4),
-                              Expanded(
-                                child: Text(
-                                  member.email!,
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: theme.colorScheme.onSurfaceVariant,
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                        const SizedBox(height: 4),
-                        Text(
-                          'Added ${AppDateUtils.getRelativeTime(member.createdAt)}',
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant
-                                .withValues(alpha: 0.8),
-                          ),
-                        ),
-                      ],
+                            )
+                          : null,
                     ),
-                  ),
-
-                  // Arrow Icon
-                  Icon(
-                    Icons.chevron_right,
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ],
-              ),
+                    const SizedBox(width: 16),
+                    // Name & Phone
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            member.name,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          Text(
+                            member.phone ?? '',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    // Balance Badge
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: isPositive ? Colors.green : Colors.red,
+                          width: 1.2,
+                        ),
+                      ),
+                      child: Text(
+                        balance.toStringAsFixed(2),
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: isPositive ? Colors.green : Colors.red,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                // Funds & Expenses Row
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    _buildStat(
+                      context,
+                      'Funds',
+                      funds,
+                      theme.colorScheme.primary,
+                    ),
+                    Container(
+                      height: 30,
+                      width: 1.5,
+                      color: theme.dividerColor,
+                    ),
+                    _buildStat(
+                      context,
+                      'Expenses',
+                      expenses,
+                      theme.colorScheme.error,
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildStat(
+    BuildContext context,
+    String label,
+    double value,
+    Color color,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
+        ),
+        SizedBox(height: 8),
+        Text(
+          value.toStringAsFixed(2),
+          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: color,
+          ),
+        ),
+      ],
     );
   }
 }
