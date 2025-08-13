@@ -1,4 +1,4 @@
-package com.example.share_expenses
+package com.aakash.share_expenses
 
 import io.flutter.embedding.android.FlutterActivity
 
