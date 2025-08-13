@@ -5,6 +5,8 @@ import 'package:share_expenses/presentation/bloc/dashboard/bloc/dashboard_event.
 import 'package:share_expenses/presentation/bloc/expense/bloc/expense_bloc.dart';
 import 'package:share_expenses/presentation/bloc/expense/bloc/expense_event.dart';
 import 'package:share_expenses/presentation/bloc/expense/bloc/expense_state.dart';
+import 'package:share_expenses/presentation/bloc/member/bloc/member_bloc.dart';
+import 'package:share_expenses/presentation/bloc/member/bloc/member_event.dart';
 
 import '../../../widgets/common/empty_state_widget.dart';
 import '../../../widgets/common/loading_widget.dart';
@@ -38,6 +40,8 @@ class _ExpenseTabState extends State<ExpenseTab> {
               ),
             );
           } else if (state is ExpenseOperationSuccess) {
+            context.read<DashboardBloc>().add(LoadDashboardData());
+            context.read<MemberBloc>().add(LoadMembers());
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
@@ -142,7 +146,6 @@ class _ExpenseTabState extends State<ExpenseTab> {
           TextButton(
             onPressed: () {
               context.read<ExpenseBloc>().add(DeleteExpense(expenseId));
-              context.read<DashboardBloc>().add(LoadDashboardData());
               Navigator.of(context).pop();
             },
             style: TextButton.styleFrom(
