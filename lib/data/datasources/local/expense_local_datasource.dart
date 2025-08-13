@@ -125,11 +125,21 @@ class ExpenseLocalDataSourceImpl implements ExpenseLocalDataSource {
   @override
   Future<void> deleteExpense(String id) async {
     final db = await databaseHelper.database;
-    await db.delete(
-      AppConstants.expensesTable,
-      where: 'id = ?',
-      whereArgs: [id],
-    );
+    await db.transaction((txn) async {
+      // First delete from expense_members table
+      await txn.delete(
+        AppConstants.expenseMembersTable,
+        where: 'expense_id = ?',
+        whereArgs: [id],
+      );
+
+      // Then delete from expenses table
+      await txn.delete(
+        AppConstants.expensesTable,
+        where: 'id = ?',
+        whereArgs: [id],
+      );
+    });
   }
 
   @override
