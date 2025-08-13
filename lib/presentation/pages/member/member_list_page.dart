@@ -105,12 +105,16 @@ class MemberListPage extends StatelessWidget {
         },
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Theme.of(context).colorScheme.primary,
         onPressed: () {
           Navigator.of(context).push(
             MaterialPageRoute(builder: (context) => const AddMemberPage()),
           );
         },
-        child: const Icon(Icons.person_add),
+        child: Icon(
+          Icons.person_add,
+          color: Theme.of(context).colorScheme.onPrimary,
+        ),
       ),
     );
   }
