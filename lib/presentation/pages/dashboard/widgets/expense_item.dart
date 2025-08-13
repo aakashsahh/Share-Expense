@@ -59,13 +59,15 @@ class ExpenseItem extends StatelessWidget {
                 children: [
                   // Category Icon
                   Container(
-                    width: 48,
-                    height: 48,
+                    width: 40,
+                    height: 40,
                     decoration: BoxDecoration(
+                      //color: theme.colorScheme.surfaceContainer,
                       color: AppColors.getCategoryColor(
                         expense.category,
-                      ).withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(12),
+                      ).withValues(alpha: 0.1),
+                      //borderRadius: BorderRadius.circular(12),
+                      shape: BoxShape.circle,
                     ),
                     child: Icon(
                       _getCategoryIcon(expense.category),
@@ -84,7 +86,7 @@ class ExpenseItem extends StatelessWidget {
                         Text(
                           expense.title,
                           style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                         if (expense.description.isNotEmpty) ...[
@@ -142,7 +144,7 @@ class ExpenseItem extends StatelessWidget {
                       Text(
                         CurrencyFormatter.format(expense.amount),
                         style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w500,
                           color: theme.colorScheme.error,
                         ),
                       ),
@@ -153,13 +155,13 @@ class ExpenseItem extends StatelessWidget {
                           children: [
                             Icon(
                               Icons.people,
-                              size: 12,
+                              size: 16,
                               color: theme.colorScheme.onSurfaceVariant,
                             ),
                             const SizedBox(width: 2),
                             Text(
                               '${expense.involvedMembers.length}',
-                              style: theme.textTheme.labelSmall?.copyWith(
+                              style: theme.textTheme.labelLarge?.copyWith(
                                 color: theme.colorScheme.onSurfaceVariant,
                               ),
                             ),
