@@ -70,12 +70,12 @@ class AppColors {
   );
 
   // Custom colors for expense categories
-  static const Color foodColor = Color(0xFFFF6B6B);
+  static const Color foodColor = Color.fromARGB(255, 243, 105, 6);
   static const Color transportColor = Color(0xFF4ECDC4);
   static const Color entertainmentColor = Color(0xFF45B7D1);
-  static const Color shoppingColor = Color(0xFF96CEB4);
-  static const Color billsColor = Color(0xFFFECA57);
-  static const Color othersColor = Color(0xFFFF9FF3);
+  static const Color shoppingColor = Color.fromARGB(255, 64, 196, 134);
+  static const Color billsColor = Color.fromARGB(255, 255, 174, 0);
+  static const Color othersColor = Color.fromARGB(255, 219, 18, 192);
 
   static Color getCategoryColor(String category) {
     switch (category.toLowerCase()) {
