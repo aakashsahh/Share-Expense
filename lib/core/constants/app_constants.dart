@@ -1,5 +1,5 @@
 class AppConstants {
-  static const String appName = 'Expense Sharing';
+  static const String appName = 'Share Expense';
   static const String appVersion = '1.0.0';
 
   // Database
