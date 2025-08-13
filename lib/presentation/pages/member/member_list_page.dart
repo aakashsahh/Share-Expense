@@ -69,7 +69,12 @@ class MemberListPage extends StatelessWidget {
                   return MemberCard(
                     member: state.members[index],
                     onTap: () {
-                      // Navigate to member details
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              AddMemberPage(member: state.members[index]),
+                        ),
+                      );
                     },
                     onEdit: () {
                       Navigator.of(context).push(
