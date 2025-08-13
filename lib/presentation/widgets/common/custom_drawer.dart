@@ -10,7 +10,6 @@ import 'package:share_expenses/presentation/bloc/fund/bloc/fund_bloc.dart';
 import 'package:share_expenses/presentation/bloc/fund/bloc/fund_event.dart';
 import 'package:share_expenses/presentation/bloc/member/bloc/member_bloc.dart';
 import 'package:share_expenses/presentation/bloc/member/bloc/member_event.dart';
-import 'package:share_expenses/presentation/pages/dashboard/dashboard_page.dart';
 import 'package:share_expenses/presentation/pages/member/member_list_page.dart';
 
 class CustomDrawer extends StatelessWidget {
@@ -79,18 +78,6 @@ class CustomDrawer extends StatelessWidget {
             child: ListView(
               padding: EdgeInsets.zero,
               children: [
-                ListTile(
-                  leading: const Icon(Icons.dashboard),
-                  title: const Text('Dashboard'),
-                  onTap: () {
-                    Navigator.of(context).pop();
-                    Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(
-                        builder: (context) => const DashboardPage(),
-                      ),
-                    );
-                  },
-                ),
                 ListTile(
                   leading: const Icon(Icons.people),
                   title: const Text('Members'),
