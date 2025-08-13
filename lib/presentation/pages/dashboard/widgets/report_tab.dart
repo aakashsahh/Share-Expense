@@ -330,22 +330,19 @@ class ReportTab extends StatelessWidget {
                               fontWeight: FontWeight.w600,
                             ),
                           ),
-                          Row(
-                            children: [
-                              Text(
-                                'Paid: ${CurrencyFormatter.format(memberBalance.totalFunds)}',
-                                style: theme.textTheme.labelSmall?.copyWith(
-                                  color: theme.colorScheme.tertiary,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                'Owes: ${CurrencyFormatter.format(memberBalance.totalExpenses)}',
-                                style: theme.textTheme.labelSmall?.copyWith(
-                                  color: theme.colorScheme.error,
-                                ),
-                              ),
-                            ],
+                          SizedBox(height: 4),
+                          Text(
+                            'Paid: ${CurrencyFormatter.format(memberBalance.totalFunds)}',
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: theme.colorScheme.tertiary,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Owes: ${CurrencyFormatter.format(memberBalance.totalExpenses)}',
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: theme.colorScheme.error,
+                            ),
                           ),
                         ],
                       ),
