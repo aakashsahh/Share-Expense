@@ -28,18 +28,10 @@ class _BalanceCardState extends State<BalanceCard> {
       child: Card(
         elevation: 4,
         child: Container(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
             color: theme.colorScheme.surfaceContainer,
-            // gradient: LinearGradient(
-            //   begin: Alignment.topLeft,
-            //   end: Alignment.bottomRight,
-            //   colors: [
-            //     theme.colorScheme.primaryContainer,
-            //     theme.colorScheme.primaryContainer.withValues(alpha: 0.8),
-            //   ],
-            // ),
           ),
           child: Column(
             children: [
@@ -48,8 +40,8 @@ class _BalanceCardState extends State<BalanceCard> {
                 children: [
                   Text(
                     'Total Balance',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      color: theme.colorScheme.onPrimaryContainer,
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      color: theme.colorScheme.onSurface,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -121,9 +113,7 @@ class _BalanceCardState extends State<BalanceCard> {
             Text(
               label,
               style: theme.textTheme.bodyLarge?.copyWith(
-                color: theme.colorScheme.onPrimaryContainer.withValues(
-                  alpha: 0.8,
-                ),
+                color: theme.colorScheme.onSurface,
               ),
             ),
           ],
