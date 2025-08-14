@@ -1,5 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:share_expenses/presentation/bloc/member/bloc/member_bloc.dart';
 import 'package:share_expenses/presentation/bloc/member/bloc/member_event.dart';
 
@@ -19,6 +23,7 @@ class _AddMemberPageState extends State<AddMemberPage> {
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
   final _emailController = TextEditingController();
+  String? _tempImagePath;
 
   bool get _isEditing => widget.member != null;
 
@@ -46,6 +51,23 @@ class _AddMemberPageState extends State<AddMemberPage> {
     super.dispose();
   }
 
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      final directory = await getApplicationDocumentsDirectory();
+      final fileName = pickedFile.name;
+      final savedImage = await File(
+        pickedFile.path,
+      ).copy('${directory.path}/$fileName');
+
+      setState(() {
+        _tempImagePath = savedImage.path;
+      });
+    }
+  }
+
   void _saveMember() {
     if (_formKey.currentState!.validate()) {
       if (_isEditing) {
@@ -58,7 +80,7 @@ class _AddMemberPageState extends State<AddMemberPage> {
               ? null
               : _emailController.text.trim(),
           // Keep existing imagePath if not changed
-          imagePath: widget.member!.imagePath,
+          imagePath: _tempImagePath ?? widget.member!.imagePath,
         );
 
         context.read<MemberBloc>().add(UpdateMember(updatedMember));
@@ -72,7 +94,7 @@ class _AddMemberPageState extends State<AddMemberPage> {
           email: _emailController.text.trim().isEmpty
               ? null
               : _emailController.text.trim(),
-          imagePath: null,
+          imagePath: _tempImagePath,
           createdAt: DateTime.now(),
         );
         context.read<MemberBloc>().add(AddMember(newMember));
@@ -115,20 +137,28 @@ class _AddMemberPageState extends State<AddMemberPage> {
                   CircleAvatar(
                     radius: 50,
                     backgroundColor: theme.colorScheme.primaryContainer,
-                    child: _nameController.text.isNotEmpty
-                        ? Text(
-                            _nameController.text.substring(0, 1).toUpperCase(),
-                            style: TextStyle(
-                              fontSize: 32,
-                              fontWeight: FontWeight.bold,
-                              color: theme.colorScheme.onPrimaryContainer,
-                            ),
+                    backgroundImage:
+                        (_tempImagePath != null ||
+                            (_isEditing && widget.member!.imagePath != null))
+                        ? FileImage(
+                            File(_tempImagePath ?? widget.member!.imagePath!),
                           )
-                        : Icon(
-                            Icons.person,
-                            size: 40,
-                            color: theme.colorScheme.onPrimaryContainer,
-                          ),
+                        : null,
+                    child:
+                        (_tempImagePath == null &&
+                            (!_isEditing || widget.member!.imagePath == null))
+                        ? (_nameController.text.isNotEmpty
+                              ? Text(
+                                  _nameController.text
+                                      .substring(0, 1)
+                                      .toUpperCase(),
+                                  style: TextStyle(
+                                    fontSize: 32,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                )
+                              : Icon(Icons.person, size: 40))
+                        : null,
                   ),
                   Positioned(
                     bottom: 0,
@@ -145,7 +175,7 @@ class _AddMemberPageState extends State<AddMemberPage> {
                           size: 20,
                         ),
                         onPressed: () {
-                          // TODO: Implement image picker
+                          _pickImage();
                         },
                       ),
                     ),
