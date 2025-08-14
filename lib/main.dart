@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:share_expenses/presentation/bloc/dashboard/bloc/dashboard_bloc.dart';
 import 'package:share_expenses/presentation/bloc/expense/bloc/expense_bloc.dart';
 import 'package:share_expenses/presentation/bloc/fund/bloc/fund_bloc.dart';
@@ -9,9 +12,16 @@ import 'core/theme/app_theme.dart';
 import 'injection_container.dart' as di;
 import 'presentation/pages/dashboard/dashboard_page.dart';
 
+late Directory appDocDir;
+
+Future<void> loadDirectory() async {
+  appDocDir = await getApplicationDocumentsDirectory();
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await di.init();
+  await loadDirectory();
   runApp(const ExpenseSharingApp());
 }
 
