@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:share_expenses/data/models/member.dart';
 
@@ -45,7 +47,7 @@ class MemberCard extends StatelessWidget {
                       radius: 24,
                       backgroundColor: theme.colorScheme.primaryContainer,
                       backgroundImage: member.imagePath != null
-                          ? AssetImage(member.imagePath!)
+                          ? FileImage(File(member.imagePath!))
                           : null,
                       child: member.imagePath == null
                           ? Text(

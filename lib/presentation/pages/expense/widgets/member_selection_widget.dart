@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import '../../../../data/models/member.dart';
@@ -91,16 +93,25 @@ class MemberSelectionWidget extends StatelessWidget {
                 title: Text(member.name),
                 subtitle: member.phone != null ? Text(member.phone!) : null,
                 secondary: CircleAvatar(
+                  radius: 24,
                   backgroundColor: Theme.of(
                     context,
                   ).colorScheme.primaryContainer,
-                  child: Text(
-                    member.name.substring(0, 1).toUpperCase(),
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.onPrimaryContainer,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  backgroundImage: member.imagePath != null
+                      ? FileImage(File(member.imagePath!))
+                      : null,
+                  child: member.imagePath == null
+                      ? Text(
+                          member.name.substring(0, 1).toUpperCase(),
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onPrimaryContainer,
+                              ),
+                        )
+                      : null,
                 ),
               );
             }).toList(),

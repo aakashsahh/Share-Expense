@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -279,6 +281,7 @@ class ReportTab extends StatelessWidget {
     }
 
     return Card(
+      elevation: 3,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -293,7 +296,7 @@ class ReportTab extends StatelessWidget {
             const SizedBox(height: 16),
             ...state.data.memberBalances.map((memberBalance) {
               final isPositive = memberBalance.balance >= 0;
-
+              final imagePath = memberBalance.member.imagePath;
               return Container(
                 margin: const EdgeInsets.only(bottom: 12),
                 padding: const EdgeInsets.all(12),
@@ -302,20 +305,27 @@ class ReportTab extends StatelessWidget {
                     alpha: 0.3,
                   ),
                   borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: theme.colorScheme.outlineVariant),
                 ),
                 child: Row(
                   children: [
                     CircleAvatar(
-                      radius: 16,
+                      radius: 24,
                       backgroundColor: theme.colorScheme.primaryContainer,
-                      child: Text(
-                        memberBalance.member.name.substring(0, 1).toUpperCase(),
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: theme.colorScheme.onPrimaryContainer,
-                        ),
-                      ),
+                      backgroundImage: imagePath != null
+                          ? FileImage(File(imagePath))
+                          : null,
+                      child: imagePath == null
+                          ? Text(
+                              memberBalance.member.name
+                                  .substring(0, 1)
+                                  .toUpperCase(),
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: theme.colorScheme.onPrimaryContainer,
+                              ),
+                            )
+                          : null,
                     ),
 
                     const SizedBox(width: 12),
