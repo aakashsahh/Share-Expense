@@ -55,6 +55,7 @@ class FundItem extends StatelessWidget {
           elevation: 1,
           child: InkWell(
             onTap: onTap,
+            onLongPress: onDelete,
             borderRadius: BorderRadius.circular(12),
             child: Padding(
               padding: const EdgeInsets.all(16),
