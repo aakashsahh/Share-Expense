@@ -35,6 +35,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_bloc: ^9.1.1
+  flutter_contacts: ^1.1.9+2
   flutter_slidable: ^4.0.0
   get_it: ^8.2.0
   hydrated_bloc: ^10.1.1
