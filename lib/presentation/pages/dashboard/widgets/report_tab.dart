@@ -58,6 +58,65 @@ class ReportTab extends StatelessWidget {
     if (state.data.memberBalances.isEmpty) {
       return const SizedBox.shrink();
     }
+    double getOptimalInterval(double maxValue) {
+      if (maxValue <= 100) {
+        return 10;
+      } else if (maxValue <= 500) {
+        return 100;
+      } else if (maxValue <= 1000) {
+        return 200; // Small values, smaller interval
+      } else if (maxValue <= 5000) {
+        return 1000; // Medium range
+      } else if (maxValue <= 20000) {
+        return 2000; // Larger range
+      } else if (maxValue <= 50000) {
+        return 5000; // Even larger
+      } else if (maxValue <= 100000) {
+        return 10000;
+      } else if (maxValue <= 500000) {
+        return 50000;
+      } else if (maxValue <= 1000000) {
+        return 100000;
+      } else if (maxValue <= 5000000) {
+        return 500000; // Very large values
+      } else if (maxValue <= 10000000) {
+        // 1 Crore
+        return 1000000;
+      } else if (maxValue <= 25000000) {
+        // 2.5 Cr
+        return 2500000;
+      } else if (maxValue <= 50000000) {
+        // 5 Cr
+        return 5000000;
+      } else if (maxValue <= 100000000) {
+        // 10 Cr
+        return 10000000;
+      } else if (maxValue <= 250000000) {
+        // 25 Cr
+        return 25000000;
+      } else if (maxValue <= 500000000) {
+        // 50 Cr
+        return 50000000;
+      } else {
+        return 100000000; // 10 Cr+
+      }
+    }
+
+    double getMaxValue(List<double> dataPoints) {
+      return dataPoints.isEmpty
+          ? 0
+          : dataPoints.reduce((a, b) => a > b ? a : b); // add buffer
+    }
+
+    final barGraphData = state.data.memberBalances;
+    final expenses = state.data.memberBalances
+        .map((mb) => mb.totalExpenses)
+        .toList();
+    final maxValue = getMaxValue(expenses);
+    final interval = getOptimalInterval(maxValue);
+    final adjustedMaxY = maxValue % interval == 0
+        ? maxValue
+        : ((maxValue / interval).ceil() * interval).toDouble();
 
     return Card(
       child: Padding(
@@ -72,90 +131,118 @@ class ReportTab extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            SizedBox(
-              height: 200,
-              child: BarChart(
-                BarChartData(
-                  alignment: BarChartAlignment.spaceAround,
-                  maxY:
-                      state.data.memberBalances
-                          .map((mb) => mb.totalExpenses)
-                          .reduce((a, b) => a > b ? a : b) *
-                      1.2,
-                  barTouchData: BarTouchData(
-                    enabled: true,
-                    touchTooltipData: BarTouchTooltipData(
-                      //getTooltipColor: theme.colorScheme.surface,
-                      getTooltipItem: (group, groupIndex, rod, rodIndex) {
-                        final memberBalance =
-                            state.data.memberBalances[group.x.toInt()];
-                        return BarTooltipItem(
-                          '${memberBalance.member.name}\n${CurrencyFormatter.format(rod.toY)}',
-                          TextStyle(color: theme.colorScheme.onSurface),
-                        );
-                      },
-                    ),
-                  ),
-                  titlesData: FlTitlesData(
-                    show: true,
-                    bottomTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        getTitlesWidget: (value, meta) {
-                          if (value.toInt() <
-                              state.data.memberBalances.length) {
-                            final member =
-                                state.data.memberBalances[value.toInt()].member;
-                            return Padding(
-                              padding: const EdgeInsets.only(top: 4),
-                              child: Text(
-                                member.name.length > 8
-                                    ? '${member.name.substring(0, 8)}...'
-                                    : member.name,
-                                style: theme.textTheme.labelSmall,
-                              ),
+            AspectRatio(
+              aspectRatio: 1.3,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  width: barGraphData.length > 9
+                      ? barGraphData.length * 66
+                      : barGraphData.length * 78,
+
+                  child: BarChart(
+                    BarChartData(
+                      alignment: BarChartAlignment.spaceAround,
+                      maxY: adjustedMaxY,
+
+                      barTouchData: BarTouchData(
+                        enabled: true,
+                        touchTooltipData: BarTouchTooltipData(
+                          //getTooltipColor: theme.colorScheme.surface,
+                          getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                            final memberBalance =
+                                state.data.memberBalances[group.x.toInt()];
+                            return BarTooltipItem(
+                              '${memberBalance.member.name}\n${CurrencyFormatter.format(rod.toY)}',
+                              TextStyle(color: theme.colorScheme.onSurface),
                             );
-                          }
-                          return const Text('');
-                        },
+                          },
+                        ),
                       ),
-                    ),
-                    leftTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        getTitlesWidget: (value, meta) {
-                          return Text(
-                            '₹${(value / 1000).toStringAsFixed(0)}k',
-                            style: theme.textTheme.labelSmall,
-                          );
-                        },
-                      ),
-                    ),
-                    topTitles: const AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
-                    ),
-                    rightTitles: const AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
-                    ),
-                  ),
-                  borderData: FlBorderData(show: false),
-                  barGroups: state.data.memberBalances.asMap().entries.map((
-                    entry,
-                  ) {
-                    return BarChartGroupData(
-                      x: entry.key,
-                      barRods: [
-                        BarChartRodData(
-                          toY: entry.value.totalExpenses,
-                          color: theme.colorScheme.primary,
-                          width: 20,
-                          borderRadius: const BorderRadius.vertical(
-                            top: Radius.circular(4),
+                      titlesData: FlTitlesData(
+                        show: true,
+                        bottomTitles: AxisTitles(
+                          sideTitles: SideTitles(
+                            showTitles: true,
+                            getTitlesWidget: (value, meta) {
+                              if (value.toInt() <
+                                  state.data.memberBalances.length) {
+                                final member = state
+                                    .data
+                                    .memberBalances[value.toInt()]
+                                    .member;
+                                return Padding(
+                                  padding: const EdgeInsets.only(top: 4),
+                                  child: Text(
+                                    member.name.length > 8
+                                        ? '${member.name.substring(0, 8)}...'
+                                        : member.name,
+                                    style: theme.textTheme.labelSmall,
+                                  ),
+                                );
+                              }
+                              return const Text('');
+                            },
                           ),
                         ),
-                      ],
-                    );
-                  }).toList(),
+                        leftTitles: AxisTitles(
+                          sideTitles: SideTitles(
+                            showTitles: true,
+                            interval: interval,
+                            reservedSize: 80,
+                            getTitlesWidget: (value, meta) {
+                              return Padding(
+                                padding: const EdgeInsets.only(
+                                  right: 0,
+                                  top: 12,
+                                ),
+                                child: Text(
+                                  'Rs ${value.toInt()}',
+                                  // value <= 999
+                                  //     ? 'Rs${value.toInt()}'
+                                  //     : 'Rs${(value / 1000).toStringAsFixed(0)}k',
+                                  style: theme.textTheme.labelMedium,
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                        topTitles: const AxisTitles(
+                          sideTitles: SideTitles(showTitles: false),
+                        ),
+                        rightTitles: const AxisTitles(
+                          sideTitles: SideTitles(showTitles: false),
+                        ),
+                      ),
+                      borderData: FlBorderData(show: false),
+                      barGroups: state.data.memberBalances.asMap().entries.map((
+                        entry,
+                      ) {
+                        return BarChartGroupData(
+                          x: entry.key,
+                          barRods: [
+                            // BarChartRodData(
+                            //   toY: entry.value.totalFunds,
+                            //   color: theme.colorScheme.tertiary,
+                            //   width: 20,
+                            //   borderRadius: const BorderRadius.vertical(
+                            //     top: Radius.circular(4),
+                            //   ),
+                            // ),
+                            BarChartRodData(
+                              toY: entry.value.totalExpenses,
+                              color: theme.colorScheme.primary,
+                              width: 20,
+                              borderRadius: const BorderRadius.vertical(
+                                top: Radius.circular(4),
+                              ),
+                            ),
+                          ],
+                        );
+                      }).toList(),
+                    ),
+                  ),
                 ),
               ),
             ),
