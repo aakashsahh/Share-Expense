@@ -2,8 +2,10 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:share_expenses/presentation/bloc/member/bloc/member_bloc.dart';
 import 'package:share_expenses/presentation/bloc/member/bloc/member_event.dart';
 
@@ -33,7 +35,6 @@ class _AddMemberPageState extends State<AddMemberPage> {
     if (_isEditing) {
       _populateFields();
     }
-    print(widget.member);
   }
 
   void _populateFields() {
@@ -65,6 +66,44 @@ class _AddMemberPageState extends State<AddMemberPage> {
       setState(() {
         _tempImagePath = savedImage.path;
       });
+    }
+  }
+
+  Future<void> _pickContact() async {
+    if (await Permission.contacts.request().isGranted) {
+      final contact = await FlutterContacts.openExternalPick();
+      if (contact != null) {
+        final fullContact = await FlutterContacts.getContact(
+          contact.id,
+          withPhoto: true,
+        );
+
+        setState(() {
+          _nameController.text = fullContact?.displayName ?? '';
+
+          if (fullContact?.phones.isNotEmpty ?? false) {
+            _phoneController.text = fullContact!.phones.first.number;
+          }
+
+          if (fullContact?.emails.isNotEmpty ?? false) {
+            _emailController.text = fullContact!.emails.first.address;
+          }
+        });
+
+        // If contact has a photo, save it to a temp file
+        if (fullContact?.photo != null && fullContact!.photo!.isNotEmpty) {
+          final directory = await getApplicationDocumentsDirectory();
+          final filePath =
+              '${directory.path}/contact_photo_${fullContact.id}.png';
+          final file = File(filePath);
+          await file.writeAsBytes(fullContact.photo!);
+
+          setState(() {
+            _tempImagePath = filePath;
+          });
+          print(_tempImagePath);
+        }
+      }
     }
   }
 
@@ -125,112 +164,159 @@ class _AddMemberPageState extends State<AddMemberPage> {
           ),
         ],
       ),
-
       body: Form(
         key: _formKey,
-        child: ListView(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
-          children: [
-            Center(
-              child: Stack(
+          child: Column(
+            children: [
+              // Avatar with border
+              Stack(
+                alignment: Alignment.center,
                 children: [
-                  CircleAvatar(
-                    radius: 50,
-                    backgroundColor: theme.colorScheme.primaryContainer,
-                    backgroundImage:
-                        (_tempImagePath != null ||
-                            (_isEditing && widget.member!.imagePath != null))
-                        ? FileImage(
-                            File(_tempImagePath ?? widget.member!.imagePath!),
-                          )
-                        : null,
-                    child:
-                        (_tempImagePath == null &&
-                            (!_isEditing || widget.member!.imagePath == null))
-                        ? (_nameController.text.isNotEmpty
-                              ? Text(
-                                  _nameController.text
-                                      .substring(0, 1)
-                                      .toUpperCase(),
-                                  style: TextStyle(
-                                    fontSize: 32,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                )
-                              : Icon(Icons.person, size: 40))
-                        : null,
+                  Container(
+                    padding: const EdgeInsets.all(4), // Border padding
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: theme.colorScheme.primary,
+                        width: 3,
+                      ),
+                    ),
+                    child: CircleAvatar(
+                      radius: 55,
+                      backgroundColor: theme.colorScheme.primaryContainer,
+                      backgroundImage:
+                          (_tempImagePath != null ||
+                              (_isEditing && widget.member?.imagePath != null))
+                          ? FileImage(
+                              File(_tempImagePath ?? widget.member!.imagePath!),
+                            )
+                          : null,
+                      child:
+                          (_tempImagePath == null &&
+                              (!_isEditing || widget.member?.imagePath == null))
+                          ? (_nameController.text.isNotEmpty
+                                ? Text(
+                                    _nameController.text
+                                        .substring(0, 1)
+                                        .toUpperCase(),
+                                    style: const TextStyle(
+                                      fontSize: 36,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  )
+                                : const Icon(Icons.person, size: 50))
+                          : null,
+                    ),
                   ),
                   Positioned(
                     bottom: 0,
                     right: 0,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.primary,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: IconButton(
-                        icon: Icon(
+                    child: InkWell(
+                      onTap: _pickImage,
+                      child: CircleAvatar(
+                        radius: 20,
+                        backgroundColor: theme.colorScheme.primary,
+                        child: Icon(
                           Icons.camera_alt,
                           color: theme.colorScheme.onPrimary,
                           size: 20,
                         ),
-                        onPressed: () {
-                          _pickImage();
-                        },
                       ),
                     ),
                   ),
                 ],
               ),
-            ),
-            const SizedBox(height: 32),
-            TextFormField(
-              controller: _nameController,
-              decoration: const InputDecoration(
-                labelText: 'Name *',
-                hintText: 'Enter member name',
-                prefixIcon: Icon(Icons.person),
+              const SizedBox(height: 12),
+
+              // Import contact button
+              TextButton.icon(
+                icon: const Icon(Icons.contacts),
+                label: const Text("Import from Contacts"),
+                onPressed: _pickContact,
               ),
-              onChanged: (value) => setState(() {}),
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return 'Please enter member name';
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _phoneController,
-              decoration: const InputDecoration(
-                labelText: 'Phone',
-                hintText: 'Enter phone number',
-                prefixIcon: Icon(Icons.phone),
+
+              const SizedBox(height: 24),
+
+              // Form Card
+              Card(
+                elevation: 2,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        controller: _nameController,
+                        decoration: const InputDecoration(
+                          labelText: 'Name *',
+                          prefixIcon: Icon(Icons.person),
+                        ),
+                        onChanged: (_) => setState(() {}),
+                        validator: (value) =>
+                            (value == null || value.trim().isEmpty)
+                            ? 'Please enter member name'
+                            : null,
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: _phoneController,
+                        decoration: const InputDecoration(
+                          labelText: 'Phone',
+                          prefixIcon: Icon(Icons.phone),
+                        ),
+                        keyboardType: TextInputType.phone,
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: _emailController,
+                        decoration: const InputDecoration(
+                          labelText: 'Email',
+                          prefixIcon: Icon(Icons.email),
+                        ),
+                        keyboardType: TextInputType.emailAddress,
+                        validator: (value) {
+                          if (value != null && value.isNotEmpty) {
+                            final emailRegex = RegExp(
+                              r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                            );
+                            if (!emailRegex.hasMatch(value)) {
+                              return 'Please enter a valid email';
+                            }
+                          }
+                          return null;
+                        },
+                      ),
+                    ],
+                  ),
+                ),
               ),
-              keyboardType: TextInputType.phone,
+            ],
+          ),
+        ),
+      ),
+
+      // Big bottom save button
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: ElevatedButton(
+          onPressed: () {
+            _saveMember();
+            Navigator.pop(context);
+          },
+          style: ElevatedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
             ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _emailController,
-              decoration: const InputDecoration(
-                labelText: 'Email',
-                hintText: 'Enter email address',
-                prefixIcon: Icon(Icons.email),
-              ),
-              keyboardType: TextInputType.emailAddress,
-              validator: (value) {
-                if (value != null && value.isNotEmpty) {
-                  final emailRegex = RegExp(
-                    r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-                  );
-                  if (!emailRegex.hasMatch(value)) {
-                    return 'Please enter a valid email address';
-                  }
-                }
-                return null;
-              },
-            ),
-          ],
+          ),
+          child: Text(
+            _isEditing ? 'Update Member' : 'Save Member',
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
         ),
       ),
     );
