@@ -45,7 +45,7 @@ class AppDateUtils {
       return '${difference.inHours}h ago';
     } else if (difference.inDays == 1) {
       return 'Yesterday';
-    } else if (difference.inDays < 7) {
+    } else if (difference.inDays < 2) {
       return '${difference.inDays}d ago';
     } else {
       return formatForDisplay(date);
