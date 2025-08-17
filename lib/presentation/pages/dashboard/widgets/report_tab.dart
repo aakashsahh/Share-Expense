@@ -130,120 +130,110 @@ class ReportTab extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
             AspectRatio(
-              aspectRatio: 1.3,
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  width: barGraphData.length > 9
-                      ? barGraphData.length * 66
-                      : barGraphData.length * 78,
+              aspectRatio: 1.2,
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  // Each bar gets at least 40px, adjust dynamically
+                  final barWidth = 40.0;
+                  final minChartWidth = barGraphData.length * (barWidth + 30);
 
-                  child: BarChart(
-                    BarChartData(
-                      alignment: BarChartAlignment.spaceAround,
-                      maxY: adjustedMaxY,
-
-                      barTouchData: BarTouchData(
-                        enabled: true,
-                        touchTooltipData: BarTouchTooltipData(
-                          //getTooltipColor: theme.colorScheme.surface,
-                          getTooltipItem: (group, groupIndex, rod, rodIndex) {
-                            final memberBalance =
-                                state.data.memberBalances[group.x.toInt()];
-                            return BarTooltipItem(
-                              '${memberBalance.member.name}\n${CurrencyFormatter.format(rod.toY)}',
-                              TextStyle(color: theme.colorScheme.onSurface),
-                            );
-                          },
-                        ),
-                      ),
-                      titlesData: FlTitlesData(
-                        show: true,
-                        bottomTitles: AxisTitles(
-                          sideTitles: SideTitles(
-                            showTitles: true,
-                            getTitlesWidget: (value, meta) {
-                              if (value.toInt() <
-                                  state.data.memberBalances.length) {
-                                final member = state
-                                    .data
-                                    .memberBalances[value.toInt()]
-                                    .member;
-                                return Padding(
-                                  padding: const EdgeInsets.only(top: 4),
-                                  child: Text(
-                                    member.name.length > 8
-                                        ? '${member.name.substring(0, 8)}...'
-                                        : member.name,
-                                    style: theme.textTheme.labelSmall,
-                                  ),
+                  return SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      width: minChartWidth < constraints.maxWidth
+                          ? constraints.maxWidth
+                          : minChartWidth,
+                      child: BarChart(
+                        BarChartData(
+                          alignment: BarChartAlignment.spaceAround,
+                          maxY: adjustedMaxY,
+                          barTouchData: BarTouchData(
+                            enabled: true,
+                            touchTooltipData: BarTouchTooltipData(
+                              getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                                final memberBalance =
+                                    state.data.memberBalances[group.x.toInt()];
+                                return BarTooltipItem(
+                                  '${memberBalance.member.name}\n${CurrencyFormatter.format(rod.toY)}',
+                                  TextStyle(color: theme.colorScheme.onSurface),
                                 );
-                              }
-                              return const Text('');
-                            },
+                              },
+                            ),
                           ),
-                        ),
-                        leftTitles: AxisTitles(
-                          sideTitles: SideTitles(
-                            showTitles: true,
-                            interval: interval,
-                            reservedSize: 80,
-                            getTitlesWidget: (value, meta) {
-                              return Padding(
-                                padding: const EdgeInsets.only(
-                                  right: 0,
-                                  top: 12,
-                                ),
-                                child: Text(
-                                  'Rs ${value.toInt()}',
-                                  // value <= 999
-                                  //     ? 'Rs${value.toInt()}'
-                                  //     : 'Rs${(value / 1000).toStringAsFixed(0)}k',
-                                  style: theme.textTheme.labelMedium,
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                        topTitles: const AxisTitles(
-                          sideTitles: SideTitles(showTitles: false),
-                        ),
-                        rightTitles: const AxisTitles(
-                          sideTitles: SideTitles(showTitles: false),
-                        ),
-                      ),
-                      borderData: FlBorderData(show: false),
-                      barGroups: state.data.memberBalances.asMap().entries.map((
-                        entry,
-                      ) {
-                        return BarChartGroupData(
-                          x: entry.key,
-                          barRods: [
-                            // BarChartRodData(
-                            //   toY: entry.value.totalFunds,
-                            //   color: theme.colorScheme.tertiary,
-                            //   width: 20,
-                            //   borderRadius: const BorderRadius.vertical(
-                            //     top: Radius.circular(4),
-                            //   ),
-                            // ),
-                            BarChartRodData(
-                              toY: entry.value.totalExpenses,
-                              color: theme.colorScheme.primary,
-                              width: 20,
-                              borderRadius: const BorderRadius.vertical(
-                                top: Radius.circular(4),
+                          titlesData: FlTitlesData(
+                            show: true,
+                            bottomTitles: AxisTitles(
+                              sideTitles: SideTitles(
+                                showTitles: true,
+                                getTitlesWidget: (value, meta) {
+                                  if (value.toInt() <
+                                      state.data.memberBalances.length) {
+                                    final member = state
+                                        .data
+                                        .memberBalances[value.toInt()]
+                                        .member;
+                                    return Padding(
+                                      padding: const EdgeInsets.only(top: 4),
+                                      child: Text(
+                                        member.name.length > 8
+                                            ? '${member.name.substring(0, 6)}...'
+                                            : member.name,
+                                        style: theme.textTheme.labelSmall,
+                                      ),
+                                    );
+                                  }
+                                  return const Text('');
+                                },
                               ),
                             ),
-                          ],
-                        );
-                      }).toList(),
+                            leftTitles: AxisTitles(
+                              sideTitles: SideTitles(
+                                showTitles: true,
+                                interval: interval,
+                                reservedSize: 60,
+                                getTitlesWidget: (value, meta) {
+                                  return Text(
+                                    'Rs ${value.toInt()}',
+                                    style: theme.textTheme.labelMedium,
+                                  );
+                                },
+                              ),
+                            ),
+                            topTitles: const AxisTitles(
+                              sideTitles: SideTitles(showTitles: false),
+                            ),
+                            rightTitles: const AxisTitles(
+                              sideTitles: SideTitles(showTitles: false),
+                            ),
+                          ),
+                          borderData: FlBorderData(show: false),
+                          barGroups: state.data.memberBalances
+                              .asMap()
+                              .entries
+                              .map((entry) {
+                                return BarChartGroupData(
+                                  x: entry.key,
+                                  barRods: [
+                                    BarChartRodData(
+                                      toY: entry.value.totalExpenses,
+                                      color: theme.colorScheme.primary,
+                                      width: 20,
+                                      borderRadius: const BorderRadius.vertical(
+                                        top: Radius.circular(4),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              })
+                              .toList(),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
+                  );
+                },
               ),
             ),
           ],
