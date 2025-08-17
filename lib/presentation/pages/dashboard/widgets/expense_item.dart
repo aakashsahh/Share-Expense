@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
@@ -49,6 +50,9 @@ class ExpenseItem extends StatelessWidget {
           ],
         ),
         child: Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           elevation: 1,
           child: InkWell(
             onTap: onTap,
@@ -56,119 +60,139 @@ class ExpenseItem extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             child: Padding(
               padding: const EdgeInsets.all(16),
-              child: Row(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Category Icon
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      //color: theme.colorScheme.surfaceContainer,
-                      color: AppColors.getCategoryColor(
-                        expense.category,
-                      ).withValues(alpha: 0.1),
-                      //borderRadius: BorderRadius.circular(12),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      _getCategoryIcon(expense.category),
-                      color: AppColors.getCategoryColor(expense.category),
-                      size: 24,
-                    ),
-                  ),
-
-                  const SizedBox(width: 16),
-
-                  // Expense Details
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          expense.title,
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        if (expense.description.isNotEmpty) ...[
-                          const SizedBox(height: 2),
-                          Text(
-                            expense.description,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
-                        const SizedBox(height: 4),
-                        Row(
+                  // Top row: title + amount
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // Category Icon
+                      Expanded(
+                        child: Row(
                           children: [
                             Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 2,
-                              ),
+                              width: 40,
+                              height: 40,
                               decoration: BoxDecoration(
                                 color: AppColors.getCategoryColor(
                                   expense.category,
                                 ).withValues(alpha: 0.1),
-                                borderRadius: BorderRadius.circular(4),
+                                shape: BoxShape.circle,
                               ),
-                              child: Text(
-                                expense.category,
-                                style: theme.textTheme.labelSmall?.copyWith(
-                                  color: AppColors.getCategoryColor(
-                                    expense.category,
-                                  ),
-                                  fontWeight: FontWeight.w500,
+                              child: Icon(
+                                _getCategoryIcon(expense.category),
+                                color: AppColors.getCategoryColor(
+                                  expense.category,
                                 ),
+                                size: 22,
                               ),
                             ),
-                            const SizedBox(width: 8),
-                            Text(
-                              AppDateUtils.getRelativeTime(expense.date),
-                              style: theme.textTheme.labelSmall?.copyWith(
-                                color: theme.colorScheme.onSurfaceVariant,
+                            const SizedBox(width: 12),
+
+                            // Title + description
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    expense.title,
+                                    style: theme.textTheme.titleMedium
+                                        ?.copyWith(fontWeight: FontWeight.w600),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  if (expense.description.isNotEmpty) ...[
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      expense.description,
+                                      style: theme.textTheme.bodySmall
+                                          ?.copyWith(
+                                            color: theme
+                                                .colorScheme
+                                                .onSurfaceVariant,
+                                          ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
+                                ],
                               ),
                             ),
                           ],
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // Amount
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        CurrencyFormatter.format(expense.amount),
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w500,
-                          color: theme.colorScheme.error,
                         ),
                       ),
-                      if (expense.involvedMembers.isNotEmpty) ...[
-                        const SizedBox(height: 2),
+
+                      // Amount (right side, auto-sizing)
+                      const SizedBox(width: 8),
+                      Flexible(
+                        child: AutoSizeText(
+                          CurrencyFormatter.format(expense.amount),
+                          //maxLines: 1,
+                          textAlign: TextAlign.end,
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: theme.colorScheme.error,
+                          ),
+                          minFontSize: 12,
+                          // overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 8),
+
+                  // Bottom row: date + category + members
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.access_time,
+                        size: 14,
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                      SizedBox(width: 4),
+                      Text(
+                        AppDateUtils.getRelativeTime(expense.date),
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.getCategoryColor(
+                            expense.category,
+                          ).withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          expense.category,
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: AppColors.getCategoryColor(expense.category),
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                      const Spacer(),
+                      if (expense.involvedMembers.isNotEmpty)
                         Row(
-                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(
-                              Icons.people,
-                              size: 16,
-                              color: theme.colorScheme.onSurfaceVariant,
-                            ),
-                            const SizedBox(width: 2),
+                            const Icon(Icons.people, size: 16),
+                            const SizedBox(width: 4),
                             Text(
                               '${expense.involvedMembers.length}',
-                              style: theme.textTheme.labelLarge?.copyWith(
+                              style: theme.textTheme.bodySmall?.copyWith(
                                 color: theme.colorScheme.onSurfaceVariant,
                               ),
                             ),
                           ],
                         ),
-                      ],
                     ],
                   ),
                 ],
