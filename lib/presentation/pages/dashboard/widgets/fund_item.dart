@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -28,7 +30,7 @@ class FundItem extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.only(bottom: 10),
       child: Slidable(
         endActionPane: ActionPane(
           motion: const ScrollMotion(),
@@ -52,112 +54,121 @@ class FundItem extends StatelessWidget {
           ],
         ),
         child: Card(
-          elevation: 1,
+          elevation: 2,
+
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+            //side: BorderSide(color: theme.colorScheme.outlineVariant),
+          ),
           child: InkWell(
             onTap: onTap,
             onLongPress: onDelete,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(16),
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(14),
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Fund Icon
-                  Container(
-                    width: 48,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.tertiary.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Icon(
-                      Icons.wallet,
-                      color: theme.colorScheme.tertiary,
-                      size: 24,
-                    ),
-                  ),
+                  // Avatar with subtle border
+                  _MemberAvatar(memberId: fund.memberId),
 
-                  const SizedBox(width: 16),
+                  const SizedBox(width: 12),
 
-                  // Fund Details
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          fund.title,
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        if (fund.description.isNotEmpty) ...[
-                          const SizedBox(height: 2),
-                          Text(
-                            fund.description,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
-                        const SizedBox(height: 4),
+                        // Top row: Member Name (Expanded) + Amount (FittedBox to avoid overflow)
                         Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            BlocBuilder<MemberBloc, MemberState>(
-                              builder: (context, state) {
-                                if (state is MemberLoaded) {
-                                  final member = state.members.firstWhere(
-                                    (m) => m.id == fund.memberId,
-                                    orElse: () => Member(
-                                      id: '',
-                                      name: 'Unknown',
-                                      createdAt: DateTime.now(),
-                                    ),
-                                  );
-                                  return Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 8,
-                                      vertical: 2,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: theme.colorScheme.tertiaryContainer
-                                          .withValues(alpha: 0.5),
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                    child: Text(
-                                      member.name,
-                                      style: theme.textTheme.labelSmall
-                                          ?.copyWith(
-                                            color: theme
-                                                .colorScheme
-                                                .onTertiaryContainer,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                    ),
-                                  );
-                                }
-                                return Container();
-                              },
+                            // Member name
+                            Expanded(
+                              child: _MemberName(
+                                memberId: fund.memberId,
+                                style: theme.textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                  color: theme.colorScheme.onSurface,
+                                ),
+                              ),
                             ),
                             const SizedBox(width: 8),
-                            Text(
-                              AppDateUtils.getRelativeTime(fund.date),
-                              style: theme.textTheme.labelSmall?.copyWith(
-                                color: theme.colorScheme.onSurfaceVariant,
+                            // Amount (kept compact, right aligned)
+                            FittedBox(
+                              fit: BoxFit.scaleDown,
+                              alignment: Alignment.centerRight,
+                              child: Text(
+                                CurrencyFormatter.format(fund.amount),
+                                style: theme.textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: theme.colorScheme.tertiary,
+                                ),
                               ),
                             ),
                           ],
                         ),
-                      ],
-                    ),
-                  ),
 
-                  // Amount
-                  Text(
-                    CurrencyFormatter.format(fund.amount),
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: theme.colorScheme.tertiary,
+                        const SizedBox(height: 6),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            // Member name
+                            Expanded(
+                              child: fund.title.isNotEmpty
+                                  ? Text(
+                                      fund.title,
+                                      style: theme.textTheme.bodyMedium
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.w500,
+                                            color: theme
+                                                .colorScheme
+                                                .onSurfaceVariant,
+                                          ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    )
+                                  : SizedBox.shrink(),
+                            ),
+                            const SizedBox(width: 8),
+                            // Amount (kept compact, right aligned)
+                            FittedBox(
+                              fit: BoxFit.scaleDown,
+                              alignment: Alignment.centerRight,
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.access_time_filled,
+                                    size: 14,
+                                    color: theme.colorScheme.onSurfaceVariant,
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    AppDateUtils.getRelativeTime(fund.date),
+                                    style: theme.textTheme.labelSmall?.copyWith(
+                                      color: theme.colorScheme.onSurfaceVariant,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        // Description
+                        if (fund.description.isNotEmpty) ...[
+                          const SizedBox(height: 4),
+                          Text(
+                            fund.description,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                              fontSize: 11,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ],
                     ),
                   ),
                 ],
@@ -166,6 +177,106 @@ class FundItem extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _MemberAvatar extends StatelessWidget {
+  final String memberId;
+
+  const _MemberAvatar({required this.memberId});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return BlocBuilder<MemberBloc, MemberState>(
+      buildWhen: (prev, curr) => curr is MemberLoaded || curr is MemberLoading,
+      builder: (context, state) {
+        Member? member;
+        if (state is MemberLoaded) {
+          member = state.members.firstWhere(
+            (m) => m.id == memberId,
+            orElse: () =>
+                Member(id: '', name: 'Unknown', createdAt: DateTime.now()),
+          );
+        }
+
+        ImageProvider? provider;
+        final imagePath = member?.imagePath;
+        if (imagePath != null && imagePath.isNotEmpty) {
+          // decide between file path vs asset path
+          if (imagePath.startsWith('/') || imagePath.startsWith('file://')) {
+            provider = FileImage(File(imagePath.replaceFirst('file://', '')));
+          } else {
+            provider = AssetImage(imagePath);
+          }
+        }
+
+        final initials = (member?.name.isNotEmpty ?? false)
+            ? member!.name.trim().substring(0, 1).toUpperCase()
+            : ' ';
+
+        return Container(
+          width: 48,
+          height: 48,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(color: theme.colorScheme.tertiary, width: 1.2),
+          ),
+          alignment: Alignment.center,
+          child: CircleAvatar(
+            radius: 22,
+            backgroundColor: theme.colorScheme.surfaceContainerHighest,
+            backgroundImage: provider,
+            child: provider == null
+                ? Text(
+                    initials,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: theme.colorScheme.onPrimaryContainer,
+                    ),
+                  )
+                : null,
+          ),
+        );
+      },
+    );
+  }
+}
+
+/// Member name text fetched from MemberBloc. Keeps your existing data flow.
+class _MemberName extends StatelessWidget {
+  final String memberId;
+  final TextStyle? style;
+
+  const _MemberName({required this.memberId, this.style});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<MemberBloc, MemberState>(
+      buildWhen: (prev, curr) => curr is MemberLoaded || curr is MemberLoading,
+      builder: (context, state) {
+        if (state is MemberLoaded) {
+          final member = state.members.firstWhere(
+            (m) => m.id == memberId,
+            orElse: () =>
+                Member(id: '', name: 'Unknown', createdAt: DateTime.now()),
+          );
+          return Text(
+            member.name,
+            style: style,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          );
+        }
+        return Text(
+          'Member',
+          style: style,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        );
+      },
     );
   }
 }
