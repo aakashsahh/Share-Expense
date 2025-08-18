@@ -85,11 +85,10 @@ class _BalanceCardState extends State<BalanceCard>
 
           // Main card content
           Container(
-            //height: 140,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
-              color: theme.colorScheme.surface,
-              border: Border.all(color: theme.colorScheme.outlineVariant),
+              color: theme.colorScheme.surfaceContainer,
+              border: Border.all(color: theme.colorScheme.primaryContainer),
               boxShadow: [
                 BoxShadow(
                   color: theme.shadowColor.withValues(alpha: 0.08),
@@ -102,32 +101,6 @@ class _BalanceCardState extends State<BalanceCard>
               borderRadius: BorderRadius.circular(16),
               child: Stack(
                 children: [
-                  // Shimmer effect
-                  // AnimatedBuilder(
-                  //   animation: _shimmerController,
-                  //   builder: (context, child) {
-                  //     return Positioned(
-                  //       left: -200 + (_shimmerController.value * 400),
-                  //       top: 0,
-                  //       bottom: 0,
-                  //       width: 100,
-                  //       child: Container(
-                  //         decoration: BoxDecoration(
-                  //           gradient: LinearGradient(
-                  //             colors: [
-                  //               Colors.transparent,
-                  //               Colors.white.withValues(
-                  //                 alpha: isDark ? 0.05 : 0.15,
-                  //               ),
-                  //               Colors.transparent,
-                  //             ],
-                  //           ),
-                  //         ),
-                  //       ),
-                  //     );
-                  //   },
-                  // ),
-
                   // Content
                   Padding(
                     padding: const EdgeInsets.all(16),
@@ -200,16 +173,19 @@ class _BalanceCardState extends State<BalanceCard>
                                 Colors.red.shade600,
                               ),
                             ),
-
-                            // Creative wavy divider
-                            SizedBox(
-                              width: 40,
-                              height: 40,
-                              child: CustomPaint(
-                                painter: WaveDividerPainter(
-                                  color: theme.colorScheme.primary.withValues(
-                                    alpha: 1,
-                                  ),
+                            Container(
+                              height: 50,
+                              width: 2,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    Colors.blue.withValues(alpha: 0),
+                                    Colors.blue.withValues(alpha: 0.5),
+                                    Colors.blue.withValues(alpha: 0),
+                                  ],
+                                  stops: [0.0, 0.5, 1.0],
+                                  begin: Alignment.centerLeft,
+                                  end: Alignment.centerRight,
                                 ),
                               ),
                             ),
@@ -251,80 +227,50 @@ class _BalanceCardState extends State<BalanceCard>
       tween: Tween(begin: 0, end: amount),
       curve: Curves.elasticOut,
       builder: (context, value, child) {
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(4),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: color.withValues(alpha: 0.15),
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: color.withValues(alpha: 0.15),
+                ),
+                child: Icon(icon, size: 14, color: color),
               ),
-              child: Icon(icon, size: 14, color: color),
-            ),
-            const SizedBox(width: 8),
-            Flexible(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    label,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                      fontWeight: FontWeight.w500,
-                      fontSize: 14,
+              const SizedBox(width: 8),
+              Flexible(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      label,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurface.withValues(
+                          alpha: 0.6,
+                        ),
+                        fontWeight: FontWeight.w500,
+                        fontSize: 14,
+                      ),
                     ),
-                  ),
-                  Text(
-                    CurrencyFormatter.format(value),
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: color,
-                      fontWeight: FontWeight.w500,
-                      fontSize: 14,
+                    Text(
+                      CurrencyFormatter.format(value),
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: color,
+                        fontWeight: FontWeight.w500,
+                        fontSize: 14,
+                      ),
+                      // maxLines: 1,
                     ),
-                    // maxLines: 1,
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         );
       },
     );
   }
-}
-
-class WaveDividerPainter extends CustomPainter {
-  final Color color;
-
-  WaveDividerPainter({required this.color});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = color
-      ..strokeWidth = 1.5
-      ..style = PaintingStyle.stroke;
-
-    final path = Path();
-    final centerX = size.width / 2;
-
-    // Create a wavy vertical line
-    path.moveTo(centerX, 8);
-
-    for (int i = 0; i < 3; i++) {
-      final y = 8 + (i * 8.0);
-      path.quadraticBezierTo(
-        centerX + (i % 2 == 0 ? 4 : -4),
-        y + 4,
-        centerX,
-        y + 8,
-      );
-    }
-
-    canvas.drawPath(path, paint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
