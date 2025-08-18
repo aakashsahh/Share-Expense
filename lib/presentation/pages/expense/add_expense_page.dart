@@ -30,6 +30,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
   final _amountController = TextEditingController();
 
   DateTime _selectedDate = DateTime.now();
+  TimeOfDay _selectedTime = TimeOfDay.now();
   String _selectedCategory = AppConstants.expenseCategories.first;
   List<String> _selectedMembers = [];
 
@@ -49,6 +50,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
     _descriptionController.text = expense.description;
     _amountController.text = expense.amount.toString();
     _selectedDate = expense.date;
+    _selectedTime = TimeOfDay.fromDateTime(expense.date);
     _selectedCategory = expense.category;
     _selectedMembers = List.from(expense.involvedMembers);
   }
@@ -108,7 +110,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
               decoration: const InputDecoration(
                 labelText: 'Amount',
                 hintText: 'Enter amount',
-                prefixIcon: Icon(Icons.currency_rupee),
+                prefixIcon: Icon(Icons.money_rounded),
               ),
               keyboardType: TextInputType.number,
               validator: (value) {
@@ -151,13 +153,40 @@ class _AddExpensePageState extends State<AddExpensePage> {
             const SizedBox(height: 16),
 
             // Date Picker
-            DatePickerWidget(
-              selectedDate: _selectedDate,
-              onDateSelected: (date) {
-                setState(() {
-                  _selectedDate = date;
-                });
-              },
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: DatePickerWidget(
+                    selectedDate: _selectedDate,
+                    onDateSelected: (date) {
+                      setState(() {
+                        _selectedDate = date;
+                      });
+                    },
+                  ),
+                ),
+                SizedBox(width: 16),
+                Expanded(
+                  child: InkWell(
+                    onTap: () => _selectTime(context),
+                    borderRadius: BorderRadius.circular(8),
+                    child: InputDecorator(
+                      decoration: InputDecoration(
+                        labelText: 'Select Time',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        prefixIcon: const Icon(Icons.access_time),
+                      ),
+                      child: Text(
+                        _selectedTime.format(context),
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
 
             const SizedBox(height: 16),
@@ -181,7 +210,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
             ),
 
             const SizedBox(height: 32),
-
+            Spacer(),
             // Save Button
             ElevatedButton(
               onPressed: _saveExpense,
@@ -210,14 +239,20 @@ class _AddExpensePageState extends State<AddExpensePage> {
       );
       return;
     }
-
+    final combinedDateTime = DateTime(
+      _selectedDate.year,
+      _selectedDate.month,
+      _selectedDate.day,
+      _selectedTime.hour,
+      _selectedTime.minute,
+    );
     final expense = Expense(
       id: _isEditing ? widget.expense!.id : const Uuid().v4(),
       title: _titleController.text.trim(),
       description: _descriptionController.text.trim(),
       amount: double.parse(_amountController.text),
       category: _selectedCategory,
-      date: _selectedDate,
+      date: combinedDateTime,
       createdBy: _selectedMembers.first, // For now, use first selected member
       createdAt: _isEditing ? widget.expense!.createdAt : DateTime.now(),
       involvedMembers: _selectedMembers,
@@ -232,5 +267,32 @@ class _AddExpensePageState extends State<AddExpensePage> {
     context.read<DashboardBloc>().add(LoadDashboardData());
 
     Navigator.of(context).pop();
+  }
+
+  Future<void> _selectTime(BuildContext context) async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: _selectedTime,
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                foregroundColor: Theme.of(context)
+                    .colorScheme
+                    .onPrimaryContainer, // Change this to your desired color
+              ),
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (picked != null && picked != _selectedTime) {
+      setState(() {
+        _selectedTime = picked;
+      });
+    }
   }
 }
