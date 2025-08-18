@@ -97,8 +97,14 @@ class ReportTab extends StatelessWidget {
       } else if (maxValue <= 500000000) {
         // 50 Cr
         return 50000000;
+      } else if (maxValue <= 100000000) {
+        return 500000000;
+      } else if (maxValue <= 500000000) {
+        return 5000000000;
+      } else if (maxValue <= 1000000000) {
+        return 100000000000;
       } else {
-        return 100000000; // 10 Cr+
+        return 100000000000; // 10 Cr+
       }
     }
 
@@ -136,7 +142,7 @@ class ReportTab extends StatelessWidget {
               child: LayoutBuilder(
                 builder: (context, constraints) {
                   // Each bar gets at least 40px, adjust dynamically
-                  final barWidth = 40.0;
+                  final barWidth = 20.0;
                   final minChartWidth = barGraphData.length * (barWidth + 30);
 
                   return SingleChildScrollView(
@@ -193,7 +199,7 @@ class ReportTab extends StatelessWidget {
                               sideTitles: SideTitles(
                                 showTitles: true,
                                 interval: interval,
-                                reservedSize: 60,
+                                reservedSize: 70,
                                 getTitlesWidget: (value, meta) {
                                   return Text(
                                     'Rs ${value.toInt()}',
@@ -384,78 +390,113 @@ class ReportTab extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: theme.colorScheme.outlineVariant),
                 ),
-                child: Row(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    CircleAvatar(
-                      radius: 24,
-                      backgroundColor: theme.colorScheme.primaryContainer,
-                      backgroundImage: imagePath != null
-                          ? FileImage(File(imagePath))
-                          : null,
-                      child: imagePath == null
-                          ? Text(
-                              memberBalance.member.name
-                                  .substring(0, 1)
-                                  .toUpperCase(),
-                              style: theme.textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: theme.colorScheme.onPrimaryContainer,
-                              ),
-                            )
-                          : null,
-                    ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
 
-                    const SizedBox(width: 12),
-
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            memberBalance.member.name,
-                            style: theme.textTheme.titleSmall?.copyWith(
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          SizedBox(height: 4),
-                          Text(
-                            'Paid: ${CurrencyFormatter.format(memberBalance.totalFunds)}',
-                            style: theme.textTheme.labelSmall?.copyWith(
-                              color: theme.colorScheme.tertiary,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Owes: ${CurrencyFormatter.format(memberBalance.totalExpenses)}',
-                            style: theme.textTheme.labelSmall?.copyWith(
-                              color: theme.colorScheme.error,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        Text(
-                          CurrencyFormatter.format(memberBalance.balance.abs()),
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: isPositive
-                                ? theme.colorScheme.tertiary
-                                : theme.colorScheme.error,
-                          ),
+                        // Avatar + Name
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              width: 40,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: theme.colorScheme.primary,
+                                  width: 1.2,
+                                ),
+                              ),
+                              alignment: Alignment.center,
+                              child: CircleAvatar(
+                                radius: 20,
+                                backgroundColor:
+                                    theme.colorScheme.primaryContainer,
+                                backgroundImage: imagePath != null
+                                    ? FileImage(File(imagePath))
+                                    : null,
+                                child: imagePath == null
+                                    ? Text(
+                                        memberBalance.member.name
+                                            .substring(0, 1)
+                                            .toUpperCase(),
+                                        style: theme.textTheme.titleMedium
+                                            ?.copyWith(
+                                              fontWeight: FontWeight.bold,
+                                              color: theme
+                                                  .colorScheme
+                                                  .onPrimaryContainer,
+                                            ),
+                                      )
+                                    : null,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              memberBalance.member.name,
+                              style: theme.textTheme.titleSmall?.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
                         ),
-                        Text(
-                          isPositive ? 'Gets back' : 'Should pay',
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: isPositive
-                                ? theme.colorScheme.tertiary
-                                : theme.colorScheme.error,
+                        SizedBox(width: 12),
+
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                                CurrencyFormatter.format(
+                                  memberBalance.balance.abs(),
+                                ),
+                                softWrap: true,
+                                maxLines: null,
+                                textAlign: TextAlign.end,
+                                style: theme.textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.w500,
+                                  color: isPositive
+                                      ? theme.colorScheme.tertiary
+                                      : theme.colorScheme.error,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                isPositive ? 'Gets back' : 'Should pay',
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  color: isPositive
+                                      ? theme.colorScheme.tertiary
+                                      : theme.colorScheme.error,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
+                    ),
+
+                    const SizedBox(height: 6),
+
+                    // Paid
+                    Text(
+                      'Paid: ${CurrencyFormatter.format(memberBalance.totalFunds)}',
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: theme.colorScheme.tertiary,
+                      ),
+                    ),
+
+                    const SizedBox(height: 4),
+
+                    // Owes
+                    Text(
+                      'Owes: ${CurrencyFormatter.format(memberBalance.totalExpenses)}',
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: theme.colorScheme.error,
+                      ),
                     ),
                   ],
                 ),
