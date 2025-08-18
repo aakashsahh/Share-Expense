@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:share_expenses/core/utils/currency_formatter.dart';
 import 'package:share_expenses/data/models/member.dart';
 
 class MemberCard extends StatelessWidget {
@@ -29,38 +30,50 @@ class MemberCard extends StatelessWidget {
     final isPositive = balance >= 0;
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.only(bottom: 12),
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        elevation: 3,
+        elevation: 2,
         child: InkWell(
-          onTap: onTap,
           borderRadius: BorderRadius.circular(16),
+          onTap: onTap,
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                /// Header: Avatar + Name + Phone
                 Row(
                   children: [
-                    // Avatar
-                    CircleAvatar(
-                      radius: 24,
-                      backgroundColor: theme.colorScheme.primaryContainer,
-                      backgroundImage: member.imagePath != null
-                          ? FileImage(File(member.imagePath!))
-                          : null,
-                      child: member.imagePath == null
-                          ? Text(
-                              member.name.substring(0, 1).toUpperCase(),
-                              style: theme.textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: theme.colorScheme.onPrimaryContainer,
-                              ),
-                            )
-                          : null,
+                    Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: theme.colorScheme.primaryFixedDim,
+                          width: 1.2,
+                        ),
+                      ),
+                      alignment: Alignment.center,
+                      child: CircleAvatar(
+                        radius: 24,
+                        backgroundColor: theme.colorScheme.primaryContainer,
+                        backgroundImage: member.imagePath != null
+                            ? FileImage(File(member.imagePath!))
+                            : null,
+                        child: member.imagePath == null
+                            ? Text(
+                                member.name.substring(0, 1).toUpperCase(),
+                                style: theme.textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: theme.colorScheme.onPrimaryContainer,
+                                ),
+                              )
+                            : null,
+                      ),
                     ),
                     const SizedBox(width: 16),
-                    // Name & Phone
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -71,59 +84,118 @@ class MemberCard extends StatelessWidget {
                               fontWeight: FontWeight.w600,
                             ),
                           ),
-                          Text(
-                            member.phone ?? '',
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
+                          if (member.phone != null && member.phone!.isNotEmpty)
+                            Text(
+                              member.phone!,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
                             ),
-                          ),
                         ],
                       ),
                     ),
-                    // Balance Badge
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: isPositive ? Colors.green : Colors.red,
-                          width: 1.2,
-                        ),
-                      ),
-                      child: Text(
-                        balance.toStringAsFixed(2),
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: isPositive ? Colors.green : Colors.red,
-                        ),
-                      ),
-                    ),
+                    // Optional edit/delete actions
+                    // if (onEdit != null || onDelete != null)
+                    //   PopupMenuButton<String>(
+                    //     onSelected: (value) {
+                    //       if (value == 'edit') onEdit?.call();
+                    //       if (value == 'delete') onDelete?.call();
+                    //     },
+                    //     itemBuilder: (context) => [
+                    //       if (onEdit != null)
+                    //         const PopupMenuItem(
+                    //           value: 'edit',
+                    //           child: Text('Edit'),
+                    //         ),
+                    //       // if (onDelete != null)
+                    //       //   const PopupMenuItem(
+                    //       //     value: 'delete',
+                    //       //     child: Text('Delete'),
+                    //       //   ),
+                    //     ],
+                    //   ),
                   ],
                 ),
                 const SizedBox(height: 12),
-                // Funds & Expenses Row
+
+                /// Balance Section
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 12,
+                    horizontal: 16,
+                  ),
+                  decoration: BoxDecoration(
+                    //color: theme.colorScheme.primaryContainer,
+                    color: isPositive
+                        ? theme.colorScheme.tertiary.withValues(alpha: 0.1)
+                        : Colors.red.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: isPositive
+                          ? theme.colorScheme.tertiaryContainer
+                          : theme.colorScheme.errorContainer,
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Total Balance",
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        CurrencyFormatter.format(balance),
+                        textAlign: TextAlign.center,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: isPositive
+                              ? theme.colorScheme.tertiary
+                              : theme.colorScheme.error,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                /// Funds & Expenses
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    _buildStat(
-                      context,
-                      'Funds',
-                      funds,
-                      theme.colorScheme.primary,
+                    Expanded(
+                      child: _buildStat(
+                        context,
+                        "Funds",
+                        funds,
+                        theme.colorScheme.tertiary,
+                      ),
                     ),
                     Container(
-                      height: 30,
-                      width: 1.5,
-                      color: theme.dividerColor,
+                      height: 40,
+                      width: 2,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.blue.withValues(alpha: 0),
+                            Colors.blue.withValues(alpha: 0.5),
+                            Colors.blue.withValues(alpha: 0),
+                          ],
+                          stops: [0.0, 0.5, 1.0],
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
+                        ),
+                      ),
                     ),
-                    _buildStat(
-                      context,
-                      'Expenses',
-                      expenses,
-                      theme.colorScheme.error,
+                    Expanded(
+                      child: _buildStat(
+                        context,
+                        "Expenses",
+                        expenses,
+                        theme.colorScheme.error,
+                      ),
                     ),
                   ],
                 ),
@@ -141,24 +213,31 @@ class MemberCard extends StatelessWidget {
     double value,
     Color color,
   ) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
-          ),
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      child: Flexible(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              label,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              CurrencyFormatter.format(value),
+              style: theme.textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.w500,
+                color: color,
+                // fontSize: 12,
+              ),
+            ),
+          ],
         ),
-        SizedBox(height: 8),
-        Text(
-          value.toStringAsFixed(2),
-          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: color,
-          ),
-        ),
-      ],
+      ),
     );
   }
 }
