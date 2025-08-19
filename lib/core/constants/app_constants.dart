@@ -11,6 +11,7 @@ class AppConstants {
   static const String expensesTable = 'expenses';
   static const String fundsTable = 'funds';
   static const String expenseMembersTable = 'expense_members';
+  static const String categoriesTable = 'categories';
 
   // Categories
   static const List<String> expenseCategories = [
