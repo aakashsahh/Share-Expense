@@ -30,7 +30,7 @@ class CustomDrawer extends StatelessWidget {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  theme.colorScheme.primary,
+                  theme.colorScheme.secondary,
                   theme.colorScheme.primary.withValues(alpha: 0.8),
                 ],
               ),
@@ -42,13 +42,23 @@ class CustomDrawer extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.end,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    CircleAvatar(
-                      radius: 30,
-                      backgroundColor: theme.colorScheme.onPrimary,
-                      child: Icon(
-                        Icons.group,
-                        size: 36,
-                        color: theme.colorScheme.primary,
+                    Container(
+                      height: 44,
+                      width: 44,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        //  border: Border.all(color: theme.colorScheme.secondary),
+                      ),
+
+                      child: CircleAvatar(
+                        // radius: 30,
+                        backgroundColor: theme.colorScheme.onPrimary,
+                        backgroundImage: AssetImage('assets/icons/ic_logo.png'),
+                        // Icon(
+                        //   Icons.group,
+                        //   size: 36,
+                        //   color: theme.colorScheme.primary,
+                        // ),
                       ),
                     ),
                     const SizedBox(height: 12),
