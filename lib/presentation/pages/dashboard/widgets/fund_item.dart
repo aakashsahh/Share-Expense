@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:intl/intl.dart';
 import 'package:share_expenses/presentation/bloc/member/bloc/member_bloc.dart';
 import 'package:share_expenses/presentation/bloc/member/bloc/member_state.dart';
 
@@ -128,7 +129,7 @@ class FundItem extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        const SizedBox(width: 8),
+                        //const SizedBox(width: 8),
                         // Amount (kept compact, right aligned)
                         FittedBox(
                           fit: BoxFit.scaleDown,
@@ -140,9 +141,33 @@ class FundItem extends StatelessWidget {
                                 size: 14,
                                 color: theme.colorScheme.onSurfaceVariant,
                               ),
-                              const SizedBox(width: 6),
+                              const SizedBox(width: 4),
                               Text(
                                 AppDateUtils.getRelativeTime(fund.date),
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
+                        ),
+                        FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.centerRight,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                ' • ',
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: theme.colorScheme.onSurface,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              //const SizedBox(width: 4),
+                              Text(
+                                DateFormat.jm().format(fund.date),
                                 style: theme.textTheme.labelSmall?.copyWith(
                                   color: theme.colorScheme.onSurfaceVariant,
                                 ),
