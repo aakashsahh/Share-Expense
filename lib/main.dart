@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_expenses/presentation/bloc/dashboard/bloc/dashboard_bloc.dart';
@@ -22,7 +23,12 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await di.init();
   await loadDirectory();
-  runApp(const ExpenseSharingApp());
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]).then((_) {
+    runApp(const ExpenseSharingApp());
+  });
 }
 
 class ExpenseSharingApp extends StatelessWidget {
