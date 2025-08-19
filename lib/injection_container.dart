@@ -1,6 +1,9 @@
 import 'package:get_it/get_it.dart';
 import 'package:share_expenses/core/databases/database_helper.dart';
+import 'package:share_expenses/data/datasources/local/category_local_datasource.dart';
 import 'package:share_expenses/data/datasources/local/expense_local_datasource.dart';
+import 'package:share_expenses/data/repositories/categories_repository.dart';
+import 'package:share_expenses/presentation/bloc/category/bloc/category_bloc.dart';
 import 'package:share_expenses/presentation/bloc/dashboard/bloc/dashboard_bloc.dart';
 import 'package:share_expenses/presentation/bloc/expense/bloc/expense_bloc.dart';
 import 'package:share_expenses/presentation/bloc/fund/bloc/fund_bloc.dart';
@@ -40,7 +43,9 @@ Future<void> init() async {
   sl.registerLazySingleton<DashboardLocalDataSource>(
     () => DashboardLocalDataSourceImpl(sl()),
   );
-
+  sl.registerLazySingleton<CategoryLocalDataSource>(
+    () => CategoryLocalDataSourceImpl(sl()),
+  );
   // Repositories
   sl.registerLazySingleton<MemberRepository>(() => MemberRepositoryImpl(sl()));
   sl.registerLazySingleton<ExpenseRepository>(
@@ -50,10 +55,15 @@ Future<void> init() async {
   sl.registerLazySingleton<DashboardRepository>(
     () => DashboardRepositoryImpl(sl()),
   );
-
+  sl.registerLazySingleton<CategoryRepository>(
+    () => CategoryRepositoryImpl(sl()),
+  );
+  // Initialize defaults for categories
+  await sl<CategoryRepository>().initDefaultCategories();
   // Blocs
   sl.registerFactory(() => MemberBloc(sl()));
   sl.registerFactory(() => ExpenseBloc(sl()));
   sl.registerFactory(() => FundBloc(sl()));
   sl.registerFactory(() => DashboardBloc(sl()));
+  sl.registerFactory(() => CategoryBloc(sl()));
 }
