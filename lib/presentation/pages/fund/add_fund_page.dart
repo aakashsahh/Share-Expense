@@ -6,6 +6,7 @@ import 'package:share_expenses/presentation/bloc/fund/bloc/fund_bloc.dart';
 import 'package:share_expenses/presentation/bloc/fund/bloc/fund_event.dart';
 import 'package:share_expenses/presentation/bloc/member/bloc/member_bloc.dart';
 import 'package:share_expenses/presentation/bloc/member/bloc/member_state.dart';
+import 'package:share_expenses/presentation/pages/expense/widgets/time_picker_widget.dart';
 import 'package:share_expenses/presentation/pages/member/add_member_page.dart';
 import 'package:uuid/uuid.dart';
 
@@ -28,6 +29,7 @@ class _AddFundPageState extends State<AddFundPage> {
   final _amountController = TextEditingController();
 
   DateTime _selectedDate = DateTime.now();
+  TimeOfDay _selectedTime = TimeOfDay.now();
   String? _selectedMemberId;
 
   bool get _isEditing => widget.fund != null;
@@ -46,6 +48,7 @@ class _AddFundPageState extends State<AddFundPage> {
     _descriptionController.text = fund.description;
     _amountController.text = fund.amount.toString();
     _selectedDate = fund.date;
+    _selectedTime = TimeOfDay.fromDateTime(fund.date);
     _selectedMemberId = fund.memberId;
   }
 
@@ -215,13 +218,31 @@ class _AddFundPageState extends State<AddFundPage> {
             const SizedBox(height: 16),
 
             // Date Picker
-            DatePickerWidget(
-              selectedDate: _selectedDate,
-              onDateSelected: (date) {
-                setState(() {
-                  _selectedDate = date;
-                });
-              },
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: DatePickerWidget(
+                    selectedDate: _selectedDate,
+                    onDateSelected: (date) {
+                      setState(() {
+                        _selectedDate = date;
+                      });
+                    },
+                  ),
+                ),
+                SizedBox(width: 16),
+                Expanded(
+                  child: TimePickerWidget(
+                    selectedTime: _selectedTime,
+                    onTimeSelected: (time) {
+                      setState(() {
+                        _selectedTime = time;
+                      });
+                    },
+                  ),
+                ),
+              ],
             ),
 
             const SizedBox(height: 32),
@@ -247,14 +268,20 @@ class _AddFundPageState extends State<AddFundPage> {
     if (!_formKey.currentState!.validate()) {
       return;
     }
-
+    final combinedDateTime = DateTime(
+      _selectedDate.year,
+      _selectedDate.month,
+      _selectedDate.day,
+      _selectedTime.hour,
+      _selectedTime.minute,
+    );
     final fund = Fund(
       id: _isEditing ? widget.fund!.id : const Uuid().v4(),
       title: _titleController.text.trim(),
       description: _descriptionController.text.trim(),
       amount: double.parse(_amountController.text),
       memberId: _selectedMemberId!,
-      date: _selectedDate,
+      date: combinedDateTime,
       createdAt: _isEditing ? widget.fund!.createdAt : DateTime.now(),
     );
 
