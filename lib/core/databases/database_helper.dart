@@ -85,6 +85,16 @@ class DatabaseHelper {
         FOREIGN KEY (member_id) REFERENCES ${AppConstants.membersTable} (id)
       )
     ''');
+    await db.execute('''
+          CREATE TABLE ${AppConstants.categoriesTable} (
+             id TEXT PRIMARY KEY,
+             name TEXT,
+             iconCodePoint INTEGER,
+             iconFontFamily TEXT,
+             type TEXT,
+             color INTEGER
+          )
+        ''');
 
     // Create indexes for better performance
     await db.execute(
