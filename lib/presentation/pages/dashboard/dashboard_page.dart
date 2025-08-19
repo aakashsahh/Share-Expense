@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:share_expenses/presentation/bloc/category/bloc/category_bloc.dart';
+import 'package:share_expenses/presentation/bloc/category/bloc/category_event.dart';
 import 'package:share_expenses/presentation/bloc/dashboard/bloc/dashboard_bloc.dart';
 import 'package:share_expenses/presentation/bloc/dashboard/bloc/dashboard_event.dart';
 import 'package:share_expenses/presentation/bloc/dashboard/bloc/dashboard_state.dart';
@@ -31,6 +33,7 @@ class _DashboardPageState extends State<DashboardPage>
     // Load initial data
     context.read<DashboardBloc>().add(LoadDashboardData());
     context.read<MemberBloc>().add(LoadMembers());
+    context.read<CategoryBloc>().add(LoadCategories());
   }
 
   @override
