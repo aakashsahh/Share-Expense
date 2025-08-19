@@ -6,6 +6,7 @@ import 'package:share_expenses/presentation/bloc/expense/bloc/expense_bloc.dart'
 import 'package:share_expenses/presentation/bloc/expense/bloc/expense_event.dart';
 import 'package:share_expenses/presentation/bloc/member/bloc/member_bloc.dart';
 import 'package:share_expenses/presentation/bloc/member/bloc/member_state.dart';
+import 'package:share_expenses/presentation/pages/expense/widgets/time_picker_widget.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../core/constants/app_constants.dart';
@@ -168,22 +169,13 @@ class _AddExpensePageState extends State<AddExpensePage> {
                 ),
                 SizedBox(width: 16),
                 Expanded(
-                  child: InkWell(
-                    onTap: () => _selectTime(context),
-                    borderRadius: BorderRadius.circular(8),
-                    child: InputDecorator(
-                      decoration: InputDecoration(
-                        labelText: 'Select Time',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        prefixIcon: const Icon(Icons.access_time),
-                      ),
-                      child: Text(
-                        _selectedTime.format(context),
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                    ),
+                  child: TimePickerWidget(
+                    selectedTime: _selectedTime,
+                    onTimeSelected: (time) {
+                      setState(() {
+                        _selectedTime = time;
+                      });
+                    },
                   ),
                 ),
               ],
@@ -267,32 +259,5 @@ class _AddExpensePageState extends State<AddExpensePage> {
     context.read<DashboardBloc>().add(LoadDashboardData());
 
     Navigator.of(context).pop();
-  }
-
-  Future<void> _selectTime(BuildContext context) async {
-    final TimeOfDay? picked = await showTimePicker(
-      context: context,
-      initialTime: _selectedTime,
-      builder: (BuildContext context, Widget? child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            textButtonTheme: TextButtonThemeData(
-              style: TextButton.styleFrom(
-                foregroundColor: Theme.of(context)
-                    .colorScheme
-                    .onPrimaryContainer, // Change this to your desired color
-              ),
-            ),
-          ),
-          child: child!,
-        );
-      },
-    );
-
-    if (picked != null && picked != _selectedTime) {
-      setState(() {
-        _selectedTime = picked;
-      });
-    }
   }
 }
