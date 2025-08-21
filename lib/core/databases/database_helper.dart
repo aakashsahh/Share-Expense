@@ -1,4 +1,5 @@
 import 'package:path/path.dart';
+import 'package:share_expenses/data/datasources/local/category_local_datasource.dart';
 import 'package:sqflite/sqflite.dart';
 
 import '../constants/app_constants.dart';
@@ -119,12 +120,14 @@ class DatabaseHelper {
   }
 
   Future<void> resetDatabase() async {
+    final DatabaseHelper databaseHelper = DatabaseHelper();
     final db = await database;
     await db.delete(AppConstants.expenseMembersTable);
     await db.delete(AppConstants.expensesTable);
     await db.delete(AppConstants.fundsTable);
     await db.delete(AppConstants.membersTable);
     await db.delete(AppConstants.categoriesTable);
+    await CategoryLocalDataSourceImpl(databaseHelper).initDefaultCategories();
   }
 
   Future<void> closeDatabase() async {
