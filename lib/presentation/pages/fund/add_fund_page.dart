@@ -187,7 +187,7 @@ class _AddFundPageState extends State<AddFundPage> {
                   }
 
                   return DropdownButtonFormField<String>(
-                    value: _selectedMemberId,
+                    initialValue: _selectedMemberId,
                     decoration: const InputDecoration(
                       labelText: 'Contributing Member',
                       prefixIcon: Icon(Icons.person),
