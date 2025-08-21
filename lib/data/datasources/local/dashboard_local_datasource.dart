@@ -123,15 +123,16 @@ class DashboardLocalDataSourceImpl implements DashboardLocalDataSource {
   Future<Map<String, double>> _getCategoryExpenses() async {
     final db = await databaseHelper.database;
     final maps = await db.rawQuery('''
-      SELECT category, SUM(amount) as total_amount
-      FROM ${AppConstants.expensesTable}
-      GROUP BY category
-    ''');
+    SELECT c.name as category_name, SUM(e.amount) as total_amount
+    FROM ${AppConstants.expensesTable} e
+    JOIN ${AppConstants.categoriesTable} c ON e.category_id = c.id
+    GROUP BY c.id
+  ''');
 
     Map<String, double> categoryExpenses = {};
     for (var map in maps) {
-      categoryExpenses[map['category'] as String] = (map['total_amount'] as num)
-          .toDouble();
+      categoryExpenses[map['category_name'] as String] =
+          (map['total_amount'] as num).toDouble();
     }
 
     return categoryExpenses;
