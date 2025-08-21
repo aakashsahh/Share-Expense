@@ -1,14 +1,16 @@
 import 'package:equatable/equatable.dart';
+import 'package:share_expenses/data/models/category_model.dart';
 
 class Expense extends Equatable {
   final String id;
   final String title;
   final String description;
   final double amount;
-  final String category;
+  final String categoryId;
   final DateTime date;
   final String createdBy;
   final DateTime createdAt;
+  final Category? category; // optional, loaded when joined
   final List<String> involvedMembers;
 
   const Expense({
@@ -16,10 +18,11 @@ class Expense extends Equatable {
     required this.title,
     required this.description,
     required this.amount,
-    required this.category,
+    required this.categoryId,
     required this.date,
     required this.createdBy,
     required this.createdAt,
+    required this.category,
     required this.involvedMembers,
   });
 
@@ -28,10 +31,11 @@ class Expense extends Equatable {
     String? title,
     String? description,
     double? amount,
-    String? category,
+    String? categoryId,
     DateTime? date,
     String? createdBy,
     DateTime? createdAt,
+    Category? category,
     List<String>? involvedMembers,
   }) {
     return Expense(
@@ -39,10 +43,11 @@ class Expense extends Equatable {
       title: title ?? this.title,
       description: description ?? this.description,
       amount: amount ?? this.amount,
-      category: category ?? this.category,
+      categoryId: categoryId ?? this.categoryId,
       date: date ?? this.date,
       createdBy: createdBy ?? this.createdBy,
       createdAt: createdAt ?? this.createdAt,
+      category: category ?? this.category,
       involvedMembers: involvedMembers ?? this.involvedMembers,
     );
   }
@@ -53,24 +58,25 @@ class Expense extends Equatable {
       'title': title,
       'description': description,
       'amount': amount,
-      'category': category,
+      'category_id': category!.id,
       'date': date.millisecondsSinceEpoch,
       'created_by': createdBy,
       'created_at': createdAt.millisecondsSinceEpoch,
     };
   }
 
-  factory Expense.fromJson(Map<String, dynamic> json) {
+  factory Expense.fromJson(Map<String, dynamic> json, {Category? category}) {
     return Expense(
       id: json['id'],
       title: json['title'],
       description: json['description'],
-      amount: json['amount']?.toDouble() ?? 0.0,
-      category: json['category'],
+      amount: json['amount'],
+      categoryId: json['category_id'],
       date: DateTime.fromMillisecondsSinceEpoch(json['date']),
       createdBy: json['created_by'],
       createdAt: DateTime.fromMillisecondsSinceEpoch(json['created_at']),
-      involvedMembers: [], // This will be loaded separately
+      category: category,
+      involvedMembers: [],
     );
   }
 
@@ -80,10 +86,11 @@ class Expense extends Equatable {
     title,
     description,
     amount,
-    category,
+    categoryId,
     date,
     createdBy,
     createdAt,
+    category,
     involvedMembers,
   ];
 }
