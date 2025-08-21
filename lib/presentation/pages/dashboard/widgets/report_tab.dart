@@ -6,7 +6,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:share_expenses/presentation/bloc/dashboard/bloc/dashboard_bloc.dart';
 import 'package:share_expenses/presentation/bloc/dashboard/bloc/dashboard_state.dart';
 
-import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/currency_formatter.dart';
 import '../../../widgets/common/loading_widget.dart';
 
@@ -264,7 +263,7 @@ class ReportTab extends StatelessWidget {
       final percentage = (amount / state.data.totalExpenses * 100);
 
       return PieChartSectionData(
-        color: AppColors.getCategoryColor(category),
+        color: Color(category.color),
         value: amount,
         title: '${percentage.toStringAsFixed(1)}%',
         radius: 60,
@@ -320,7 +319,7 @@ class ReportTab extends StatelessWidget {
                               width: 12,
                               height: 12,
                               decoration: BoxDecoration(
-                                color: AppColors.getCategoryColor(category),
+                                color: Color(category.color),
                                 shape: BoxShape.circle,
                               ),
                             ),
@@ -330,7 +329,7 @@ class ReportTab extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    category,
+                                    category.name,
                                     style: theme.textTheme.labelMedium,
                                   ),
                                   Text(
