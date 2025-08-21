@@ -1,4 +1,5 @@
 import 'package:share_expenses/data/datasources/local/expense_local_datasource.dart';
+import 'package:share_expenses/data/models/category_model.dart';
 
 import '../models/expense.dart';
 
@@ -9,7 +10,7 @@ abstract class ExpenseRepository {
   Future<void> updateExpense(Expense expense, List<String> memberIds);
   Future<void> deleteExpense(String id);
   Future<List<Expense>> getExpensesByMember(String memberId);
-  Future<Map<String, double>> getCategoryExpenses();
+  Future<Map<Category, double>> getCategoryExpenses();
 }
 
 class ExpenseRepositoryImpl implements ExpenseRepository {
@@ -48,7 +49,7 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
   }
 
   @override
-  Future<Map<String, double>> getCategoryExpenses() async {
+  Future<Map<Category, double>> getCategoryExpenses() async {
     return await localDataSource.getCategoryExpenses();
   }
 }
