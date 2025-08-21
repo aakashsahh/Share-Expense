@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:intl/intl.dart';
 
-import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/currency_formatter.dart';
 import '../../../../core/utils/date_utils.dart';
 import '../../../../data/models/expense.dart';
@@ -77,16 +76,21 @@ class ExpenseItem extends StatelessWidget {
                               width: 40,
                               height: 40,
                               decoration: BoxDecoration(
-                                color: AppColors.getCategoryColor(
-                                  expense.category,
+                                color: Color(
+                                  expense.category!.color,
                                 ).withValues(alpha: 0.1),
+                                // AppColors.getCategoryColor(
+                                //   expense.category,
+                                // ).withValues(alpha: 0.1),
                                 shape: BoxShape.circle,
                               ),
                               child: Icon(
-                                _getCategoryIcon(expense.category),
-                                color: AppColors.getCategoryColor(
-                                  expense.category,
-                                ),
+                                expense.category!.icon,
+                                // _getCategoryIcon(expense.category),
+                                color: Color(expense.category!.color),
+                                // AppColors.getCategoryColor(
+                                //   expense.category,
+                                // ),
                                 size: 22,
                               ),
                             ),
@@ -194,15 +198,17 @@ class ExpenseItem extends StatelessWidget {
                           vertical: 2,
                         ),
                         decoration: BoxDecoration(
-                          color: AppColors.getCategoryColor(
-                            expense.category,
+                          color: Color(
+                            expense.category!.color,
                           ).withValues(alpha: 0.1),
+
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(
-                          expense.category,
+                          expense.category!.name,
                           style: theme.textTheme.labelSmall?.copyWith(
-                            color: AppColors.getCategoryColor(expense.category),
+                            color: Color(expense.category!.color),
+                            //AppColors.getCategoryColor(expense.category),
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -230,22 +236,5 @@ class ExpenseItem extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  IconData _getCategoryIcon(String category) {
-    switch (category.toLowerCase()) {
-      case 'food':
-        return Icons.restaurant;
-      case 'transport':
-        return Icons.directions_car;
-      case 'entertainment':
-        return Icons.movie;
-      case 'shopping':
-        return Icons.shopping_bag;
-      case 'bills':
-        return Icons.receipt;
-      default:
-        return Icons.category;
-    }
   }
 }
