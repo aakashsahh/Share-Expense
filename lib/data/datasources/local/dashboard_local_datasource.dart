@@ -1,4 +1,5 @@
 import 'package:share_expenses/core/databases/database_helper.dart';
+import 'package:share_expenses/data/models/category_model.dart';
 
 import '../../../core/constants/app_constants.dart';
 import '../../models/dashboard_data.dart';
@@ -36,14 +37,29 @@ class DashboardLocalDataSourceImpl implements DashboardLocalDataSource {
     final totalBalance = totalFunds - totalExpenses;
 
     // Get recent expenses
-    final expenseMaps = await db.query(
-      AppConstants.expensesTable,
-      orderBy: 'date DESC',
-      limit: 10,
-    );
-    final recentExpenses = expenseMaps
-        .map((map) => Expense.fromJson(map))
-        .toList();
+    final expenseMaps = await db.rawQuery('''
+  SELECT e.*, 
+         c.id as c_id, c.name as c_name, c.color as c_color,
+         c.iconCodePoint as c_iconCodePoint, 
+         c.iconFontFamily as c_iconFontFamily, 
+         c.type as c_type
+  FROM ${AppConstants.expensesTable} e
+  JOIN ${AppConstants.categoriesTable} c ON e.category_id = c.id
+  ORDER BY e.date DESC
+  LIMIT 10
+''');
+
+    final recentExpenses = expenseMaps.map((map) {
+      final category = Category(
+        id: map['c_id'] as String,
+        name: map['c_name'] as String,
+        color: map['c_color'] as int,
+        iconCodePoint: map['c_iconCodePoint'] as int,
+        iconFontFamily: map['c_iconFontFamily'] as String,
+        type: map['c_type'] as String,
+      );
+      return Expense.fromJson(map, category: category);
+    }).toList();
 
     // Get recent funds
     final fundMaps = await db.query(
@@ -120,19 +136,29 @@ class DashboardLocalDataSourceImpl implements DashboardLocalDataSource {
     return memberBalances;
   }
 
-  Future<Map<String, double>> _getCategoryExpenses() async {
+  Future<Map<Category, double>> _getCategoryExpenses() async {
     final db = await databaseHelper.database;
     final maps = await db.rawQuery('''
-    SELECT c.name as category_name, SUM(e.amount) as total_amount
+    SELECT 
+      c.id, c.name, c.color, c.iconCodePoint, c.iconFontFamily, c.type,
+      SUM(e.amount) as total_amount
     FROM ${AppConstants.expensesTable} e
     JOIN ${AppConstants.categoriesTable} c ON e.category_id = c.id
     GROUP BY c.id
   ''');
 
-    Map<String, double> categoryExpenses = {};
+    Map<Category, double> categoryExpenses = {};
     for (var map in maps) {
-      categoryExpenses[map['category_name'] as String] =
-          (map['total_amount'] as num).toDouble();
+      final category = Category(
+        id: map['id'] as String,
+        name: map['name'] as String,
+        color: map['color'] as int,
+        iconCodePoint: map['iconCodePoint'] as int,
+        iconFontFamily: map['iconFontFamily'] as String,
+        type: map['type'] as String,
+      );
+
+      categoryExpenses[category] = (map['total_amount'] as num).toDouble();
     }
 
     return categoryExpenses;
