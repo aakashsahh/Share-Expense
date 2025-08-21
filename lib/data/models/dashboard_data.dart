@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:share_expenses/data/models/category_model.dart';
 
 import 'expense.dart';
 import 'fund.dart';
@@ -11,7 +12,7 @@ class DashboardData extends Equatable {
   final List<Expense> recentExpenses;
   final List<Fund> recentFunds;
   final List<MemberBalance> memberBalances;
-  final Map<String, double> categoryExpenses;
+  final Map<Category, double> categoryExpenses;
 
   const DashboardData({
     required this.totalBalance,
