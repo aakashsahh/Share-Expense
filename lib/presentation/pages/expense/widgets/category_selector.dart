@@ -3,17 +3,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:share_expenses/data/models/category_model.dart';
 import 'package:share_expenses/presentation/bloc/category/bloc/category_bloc.dart';
 import 'package:share_expenses/presentation/bloc/category/bloc/category_event.dart';
-import 'package:share_expenses/presentation/bloc/category/bloc/category_state.dart';
-
-import '../../../../core/constants/app_constants.dart';
-import '../../../../core/theme/app_colors.dart';
 
 class CategorySelector extends StatefulWidget {
-  final String selectedCategory;
-  final Function(String) onCategorySelected;
-
+  final List<Category> categories;
+  final Category? selectedCategory;
+  final Function(Category) onCategorySelected;
   const CategorySelector({
     super.key,
+    required this.categories,
     required this.selectedCategory,
     required this.onCategorySelected,
   });
@@ -47,19 +44,19 @@ class _CategorySelectorState extends State<CategorySelector> {
         Wrap(
           spacing: 8,
           runSpacing: 8,
-          children: AppConstants.expenseCategories.map((category) {
-            final isSelected = category == widget.selectedCategory;
-            final categoryColor = AppColors.getCategoryColor(category);
+          children: widget.categories.map((category) {
+            final isSelected = widget.selectedCategory?.id == category.id;
+            final color = Color(category.color);
 
             return FilterChip(
-              label: Text(category),
+              label: Text(category.name),
               selected: isSelected,
               onSelected: (_) => widget.onCategorySelected(category),
-              backgroundColor: categoryColor.withValues(alpha: 0.1),
-              selectedColor: categoryColor.withValues(alpha: 0.2),
-              checkmarkColor: categoryColor,
+              backgroundColor: color.withOpacity(0.1),
+              selectedColor: color.withOpacity(0.2),
+              checkmarkColor: color,
               labelStyle: TextStyle(
-                color: isSelected ? categoryColor : null,
+                color: isSelected ? color : null,
                 fontWeight: isSelected ? FontWeight.w600 : null,
               ),
             );
@@ -123,30 +120,13 @@ class _CategorySelectorState extends State<CategorySelector> {
 
                 // Grid Categories (Dynamic with Bloc)
                 Expanded(
-                  child: BlocBuilder<CategoryBloc, CategoryState>(
-                    builder: (context, state) {
-                      if (state is CategoryLoading) {
-                        return const Center(child: CircularProgressIndicator());
-                      } else if (state is CategoryLoaded) {
-                        final categories = state.categories
-                            .where((c) => c.type == "expense")
-                            .toList();
-                        return GridView.count(
-                          crossAxisCount: 4,
-                          crossAxisSpacing: 16,
-                          mainAxisSpacing: 24,
-                          children: categories
-                              .map(
-                                (category) => _buildCategoryGridItem(category),
-                              )
-                              .toList(),
-                        );
-                      } else if (state is CategoryError) {
-                        return Center(child: Text("Error: ${state.message}"));
-                      } else {
-                        return const Center(child: Text("No categories found"));
-                      }
-                    },
+                  child: GridView.count(
+                    crossAxisCount: 4,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 24,
+                    children: widget.categories
+                        .map((category) => _buildCategoryGridItem(category))
+                        .toList(),
                   ),
                 ),
               ],
@@ -160,7 +140,7 @@ class _CategorySelectorState extends State<CategorySelector> {
   Widget _buildCategoryGridItem(Category category) {
     return GestureDetector(
       onTap: () {
-        widget.onCategorySelected(category.id);
+        widget.onCategorySelected(category);
         Navigator.pop(context);
       },
       child: Column(
