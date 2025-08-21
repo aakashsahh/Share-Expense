@@ -21,6 +21,9 @@ class DatabaseHelper {
       version: AppConstants.databaseVersion,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
+      onOpen: (db) async {
+        await db.execute("PRAGMA foreign_keys = ON");
+      },
     );
   }
 
@@ -30,6 +33,9 @@ class DatabaseHelper {
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
     // Handle database migrations here
+    if (oldVersion < 2) {
+      await db.execute("ALTER TABLE expenses ADD COLUMN category_id TEXT");
+    }
   }
 
   Future<void> _createTables(Database db) async {
@@ -47,18 +53,19 @@ class DatabaseHelper {
 
     // Expenses table
     await db.execute('''
-      CREATE TABLE ${AppConstants.expensesTable} (
-        id TEXT PRIMARY KEY,
-        title TEXT NOT NULL,
-        description TEXT NOT NULL,
-        amount REAL NOT NULL,
-        category TEXT NOT NULL,
-        date INTEGER NOT NULL,
-        created_by TEXT NOT NULL,
-        created_at INTEGER NOT NULL,
-        FOREIGN KEY (created_by) REFERENCES ${AppConstants.membersTable} (id)
-      )
-    ''');
+  CREATE TABLE ${AppConstants.expensesTable} (
+    id TEXT PRIMARY KEY,
+    title TEXT NOT NULL,
+    description TEXT,
+    amount REAL NOT NULL,
+    category_id TEXT NOT NULL,
+    date INTEGER NOT NULL,
+    created_by TEXT NOT NULL,
+    created_at INTEGER NOT NULL,
+    FOREIGN KEY (created_by) REFERENCES ${AppConstants.membersTable} (id),
+    FOREIGN KEY (category_id) REFERENCES ${AppConstants.categoriesTable} (id) ON DELETE CASCADE
+  )
+''');
 
     // Funds table
     await db.execute('''
@@ -117,6 +124,7 @@ class DatabaseHelper {
     await db.delete(AppConstants.expensesTable);
     await db.delete(AppConstants.fundsTable);
     await db.delete(AppConstants.membersTable);
+    await db.delete(AppConstants.categoriesTable);
   }
 
   Future<void> closeDatabase() async {
