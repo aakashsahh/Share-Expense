@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:share_expenses/data/models/category_model.dart';
+import 'package:share_expenses/presentation/bloc/category/bloc/category_bloc.dart';
+import 'package:share_expenses/presentation/bloc/category/bloc/category_event.dart';
+import 'package:share_expenses/presentation/bloc/category/bloc/category_state.dart';
 import 'package:share_expenses/presentation/bloc/dashboard/bloc/dashboard_bloc.dart';
 import 'package:share_expenses/presentation/bloc/dashboard/bloc/dashboard_event.dart';
 import 'package:share_expenses/presentation/bloc/expense/bloc/expense_bloc.dart';
@@ -9,7 +13,6 @@ import 'package:share_expenses/presentation/bloc/member/bloc/member_state.dart';
 import 'package:share_expenses/presentation/pages/expense/widgets/time_picker_widget.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../../core/constants/app_constants.dart';
 import '../../../data/models/expense.dart';
 import 'widgets/category_selector.dart';
 import 'widgets/date_picker_widget.dart';
@@ -32,7 +35,8 @@ class _AddExpensePageState extends State<AddExpensePage> {
 
   DateTime _selectedDate = DateTime.now();
   TimeOfDay _selectedTime = TimeOfDay.now();
-  String _selectedCategory = AppConstants.expenseCategories.first;
+  Category? _selectedCategory; // instead of String
+  //  String _selectedCategory = AppConstants.expenseCategories.first;
   List<String> _selectedMembers = [];
 
   bool get _isEditing => widget.expense != null;
@@ -52,6 +56,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
     _amountController.text = expense.amount.toString();
     _selectedDate = expense.date;
     _selectedTime = TimeOfDay.fromDateTime(expense.date);
+    context.read<CategoryBloc>().add(LoadCategories());
     _selectedCategory = expense.category;
     _selectedMembers = List.from(expense.involvedMembers);
   }
@@ -142,12 +147,22 @@ class _AddExpensePageState extends State<AddExpensePage> {
             const SizedBox(height: 16),
 
             // Category Selector
-            CategorySelector(
-              selectedCategory: _selectedCategory,
-              onCategorySelected: (category) {
-                setState(() {
-                  _selectedCategory = category;
-                });
+            BlocBuilder<CategoryBloc, CategoryState>(
+              builder: (context, state) {
+                if (state is CategoryLoaded) {
+                  return CategorySelector(
+                    categories: state.categories
+                        .where((c) => c.type == "expense")
+                        .toList(),
+                    selectedCategory: _selectedCategory,
+                    onCategorySelected: (category) {
+                      setState(() {
+                        _selectedCategory = category;
+                      });
+                    },
+                  );
+                }
+                return const Center(child: CircularProgressIndicator());
               },
             ),
 
@@ -244,6 +259,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
       description: _descriptionController.text.trim(),
       amount: double.parse(_amountController.text),
       category: _selectedCategory,
+      categoryId: _selectedCategory!.id,
       date: combinedDateTime,
       createdBy: _selectedMembers.first, // For now, use first selected member
       createdAt: _isEditing ? widget.expense!.createdAt : DateTime.now(),
