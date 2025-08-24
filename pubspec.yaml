@@ -40,6 +40,7 @@ dependencies:
   flutter_launcher_icons: ^0.14.4
   flutter_slidable: ^4.0.0
   get_it: ^8.2.0
+  google_fonts: ^6.3.0
   hydrated_bloc: ^10.1.1
   image_picker: ^1.1.2
   intl: ^0.20.2
@@ -57,8 +58,8 @@ dev_dependencies:
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "assets/icons/ic_app1.png"
-  icon_size: 52
+  image_path: "assets/icons/app_logo.png"
+  icon_size: 55
   min_sdk_android: 21
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
