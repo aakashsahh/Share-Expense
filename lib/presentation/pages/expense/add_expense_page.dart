@@ -233,7 +233,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
             ),
 
             const SizedBox(height: 32),
-            Spacer(),
+            // Spacer(),
             // Save Button
             ElevatedButton(
               onPressed: _saveExpense,
