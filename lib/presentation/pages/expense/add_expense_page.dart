@@ -46,6 +46,14 @@ class _AddExpensePageState extends State<AddExpensePage> {
     super.initState();
     if (_isEditing) {
       _populateFields();
+    } else {
+      // Default to "Others" for new expense
+      final categories = context.read<CategoryBloc>().state;
+      if (categories is CategoryLoaded) {
+        _selectedCategory = categories.categories.firstWhere(
+          (c) => c.name == "Others" && c.type == "expense",
+        );
+      }
     }
   }
 
@@ -150,6 +158,13 @@ class _AddExpensePageState extends State<AddExpensePage> {
             BlocBuilder<CategoryBloc, CategoryState>(
               builder: (context, state) {
                 if (state is CategoryLoaded) {
+                  // Set default only if adding expense and no category yet
+                  if (!_isEditing && _selectedCategory == null) {
+                    _selectedCategory = state.categories.firstWhere(
+                      (c) => c.name == "Others" && c.type == "expense",
+                    );
+                  }
+
                   return CategorySelector(
                     categories: state.categories
                         .where((c) => c.type == "expense")
@@ -159,6 +174,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
                       setState(() {
                         _selectedCategory = category;
                       });
+                      Navigator.of(context).pop();
                     },
                   );
                 }
@@ -166,7 +182,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
               },
             ),
 
-            const SizedBox(height: 16),
+            const SizedBox(height: 24),
 
             // Date Picker
             Row(
