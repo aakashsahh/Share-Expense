@@ -216,27 +216,25 @@ class MemberCard extends StatelessWidget {
     final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0),
-      child: Flexible(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              label,
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            label,
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
             ),
-            const SizedBox(height: 6),
-            Text(
-              CurrencyFormatter.format(value),
-              style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w500,
-                color: color,
-                // fontSize: 12,
-              ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            CurrencyFormatter.format(value),
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w500,
+              color: color,
+              // fontSize: 12,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
