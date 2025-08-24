@@ -95,13 +95,19 @@ class _FundTabState extends State<FundTab> {
                 },
               ),
             );
+          } else if (state is FundError) {
+            return EmptyStateWidget(
+              icon: Icons.error,
+              title: state.message,
+              subtitle: 'Pull to refresh and try again',
+            );
+          } else {
+            return const EmptyStateWidget(
+              icon: Icons.error,
+              title: 'Something went wrong',
+              subtitle: 'Pull to refresh and try again',
+            );
           }
-
-          return const EmptyStateWidget(
-            icon: Icons.error,
-            title: 'Something went wrong',
-            subtitle: 'Pull to refresh and try again',
-          );
         },
       ),
       floatingActionButton: FloatingActionButton(
