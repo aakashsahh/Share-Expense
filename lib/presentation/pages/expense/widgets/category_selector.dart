@@ -22,6 +22,8 @@ class CategorySelector extends StatefulWidget {
 class _CategorySelectorState extends State<CategorySelector> {
   @override
   Widget build(BuildContext context) {
+    final selected = widget.selectedCategory;
+    if (selected == null) return SizedBox.shrink();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -41,27 +43,60 @@ class _CategorySelectorState extends State<CategorySelector> {
           ],
         ),
         const SizedBox(height: 8),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: widget.categories.map((category) {
-            final isSelected = widget.selectedCategory?.id == category.id;
-            final color = Color(category.color);
-
-            return FilterChip(
-              label: Text(category.name),
-              selected: isSelected,
-              onSelected: (_) => widget.onCategorySelected(category),
-              backgroundColor: color.withOpacity(0.1),
-              selectedColor: color.withOpacity(0.2),
-              checkmarkColor: color,
-              labelStyle: TextStyle(
-                color: isSelected ? color : null,
-                fontWeight: isSelected ? FontWeight.w600 : null,
+        InkWell(
+          onTap: () {
+            _showCategoryBottomSheet(context);
+          },
+          child: Row(
+            children: [
+              Container(
+                padding: EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: Color(selected.color).withValues(alpha: 0.2),
+                  // _getColorForCategory(
+                  //   _selectedCategory,
+                  // ).withValues(alpha: 0.2),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  selected.icon,
+                  // _selectedCategoryIcon,
+                  color: Color(selected.color),
+                  // _getColorForCategory(
+                  //   _selectedCategory,
+                  // ),
+                ),
               ),
-            );
-          }).toList(),
+              SizedBox(width: 8),
+              Text(
+                selected.name,
+
+                // _selectedCategory,
+              ),
+            ],
+          ),
         ),
+        // Wrap(
+        //   spacing: 8,
+        //   runSpacing: 8,
+        //   children: widget.categories.map((category) {
+        //     final isSelected = widget.selectedCategory?.id == category.id;
+        //     final color = Color(category.color);
+
+        //     return FilterChip(
+        //       label: Text(category.name),
+        //       selected: isSelected,
+        //       onSelected: (_) => widget.onCategorySelected(category),
+        //       backgroundColor: color.withOpacity(0.1),
+        //       selectedColor: color.withOpacity(0.2),
+        //       checkmarkColor: color,
+        //       labelStyle: TextStyle(
+        //         color: isSelected ? color : null,
+        //         fontWeight: isSelected ? FontWeight.w600 : null,
+        //       ),
+        //     );
+        //   }).toList(),
+        // ),
       ],
     );
   }
@@ -141,7 +176,11 @@ class _CategorySelectorState extends State<CategorySelector> {
     return GestureDetector(
       onTap: () {
         widget.onCategorySelected(category);
-        Navigator.pop(context);
+        // Future.microtask(() {
+        //   if (context.mounted) {
+        //     Navigator.of(context).pop();
+        //   }
+        // });
       },
       child: Column(
         // mainAxisAlignment: MainAxisAlignment.center,
