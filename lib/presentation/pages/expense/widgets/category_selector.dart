@@ -53,26 +53,13 @@ class _CategorySelectorState extends State<CategorySelector> {
                 padding: EdgeInsets.all(4),
                 decoration: BoxDecoration(
                   color: Color(selected.color).withValues(alpha: 0.2),
-                  // _getColorForCategory(
-                  //   _selectedCategory,
-                  // ).withValues(alpha: 0.2),
+
                   shape: BoxShape.circle,
                 ),
-                child: Icon(
-                  selected.icon,
-                  // _selectedCategoryIcon,
-                  color: Color(selected.color),
-                  // _getColorForCategory(
-                  //   _selectedCategory,
-                  // ),
-                ),
+                child: Icon(selected.icon, color: Color(selected.color)),
               ),
               SizedBox(width: 8),
-              Text(
-                selected.name,
-
-                // _selectedCategory,
-              ),
+              Text(selected.name, style: Theme.of(context).textTheme.bodyLarge),
             ],
           ),
         ),
