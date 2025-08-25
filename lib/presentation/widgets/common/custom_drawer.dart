@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:share_expenses/core/constants/image_constants.dart';
 import 'package:share_expenses/core/databases/database_helper.dart';
 import 'package:share_expenses/injection_container.dart' as di;
 import 'package:share_expenses/presentation/bloc/dashboard/bloc/dashboard_bloc.dart';
@@ -10,6 +11,7 @@ import 'package:share_expenses/presentation/bloc/fund/bloc/fund_bloc.dart';
 import 'package:share_expenses/presentation/bloc/fund/bloc/fund_event.dart';
 import 'package:share_expenses/presentation/bloc/member/bloc/member_bloc.dart';
 import 'package:share_expenses/presentation/bloc/member/bloc/member_event.dart';
+import 'package:share_expenses/presentation/pages/category/category_page.dart';
 import 'package:share_expenses/presentation/pages/member/member_list_page.dart';
 
 class CustomDrawer extends StatelessWidget {
@@ -42,25 +44,27 @@ class CustomDrawer extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.end,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      height: 44,
-                      width: 44,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        //  border: Border.all(color: theme.colorScheme.secondary),
-                      ),
+                    Image.asset(ImageConstants.appLogo, scale: 9),
+                    // Container(
+                    //   height: 44,
+                    //   width: 44,
+                    //   decoration: BoxDecoration(
+                    //     shape: BoxShape.circle,
+                    //     //  border: Border.all(color: theme.colorScheme.secondary),
+                    //   ),
 
-                      child: CircleAvatar(
-                        // radius: 30,
-                        backgroundColor: theme.colorScheme.onPrimary,
-                        backgroundImage: AssetImage('assets/icons/ic_logo.png'),
-                        // Icon(
-                        //   Icons.group,
-                        //   size: 36,
-                        //   color: theme.colorScheme.primary,
-                        // ),
-                      ),
-                    ),
+                    //   child:
+                    //   CircleAvatar(
+                    //     // radius: 30,
+                    //     backgroundColor: theme.colorScheme.onPrimary,
+                    //     backgroundImage: AssetImage(ImageConstants.appLogo),
+                    //     // Icon(
+                    //     //   Icons.group,
+                    //     //   size: 36,
+                    //     //   color: theme.colorScheme.primary,
+                    //     // ),
+                    //   ),
+                    // ),
                     const SizedBox(height: 12),
                     Text(
                       'Share Expense',
@@ -113,10 +117,14 @@ class CustomDrawer extends StatelessWidget {
                   },
                 ),
                 ListTile(
-                  leading: const Icon(Icons.settings),
-                  title: const Text('Settings'),
+                  leading: const Icon(Icons.category),
+                  title: const Text('Categories'),
                   onTap: () {
                     Navigator.of(context).pop();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => CategoryPage()),
+                    );
                     // Navigate to settings
                   },
                 ),
