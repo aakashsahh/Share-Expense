@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:share_expenses/data/models/category_model.dart';
 import 'package:share_expenses/presentation/bloc/category/bloc/category_bloc.dart';
 import 'package:share_expenses/presentation/bloc/category/bloc/category_event.dart';
+import 'package:share_expenses/presentation/pages/category/category_page.dart'
+    as pages;
 
 class CategorySelector extends StatefulWidget {
   final List<Category> categories;
@@ -124,7 +126,15 @@ class _CategorySelectorState extends State<CategorySelector> {
                       children: [
                         IconButton(
                           icon: const Icon(Icons.edit),
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.pop(context);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => pages.CategoryPage(),
+                              ),
+                            );
+                          },
                           color: Colors.grey,
                         ),
                         IconButton(
@@ -163,11 +173,6 @@ class _CategorySelectorState extends State<CategorySelector> {
     return GestureDetector(
       onTap: () {
         widget.onCategorySelected(category);
-        // Future.microtask(() {
-        //   if (context.mounted) {
-        //     Navigator.of(context).pop();
-        //   }
-        // });
       },
       child: Column(
         // mainAxisAlignment: MainAxisAlignment.center,
