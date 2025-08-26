@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:share_expenses/presentation/bloc/category/bloc/category_bloc.dart';
+import 'package:share_expenses/presentation/bloc/category/bloc/category_event.dart';
 import 'package:share_expenses/presentation/bloc/category/bloc/category_state.dart';
+import 'package:share_expenses/presentation/pages/category/add_category_page.dart';
 import 'package:share_expenses/presentation/widgets/common/empty_state_widget.dart';
 
 class CategoryPage extends StatefulWidget {
@@ -94,6 +96,11 @@ class _CategoryPageState extends State<CategoryPage> {
   //     Colors.brown.shade100,
   //   ),
   // ];
+  @override
+  void initState() {
+    super.initState();
+    context.read<CategoryBloc>().add(LoadCategories());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -244,6 +251,13 @@ class _CategoryPageState extends State<CategoryPage> {
                           return InkWell(
                             borderRadius: BorderRadius.circular(16),
                             onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      AddCategoryPage(category: category),
+                                ),
+                              );
                               // Add your onTap logic here
                             },
                             child: Container(
@@ -317,9 +331,9 @@ class _CategoryPageState extends State<CategoryPage> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: Theme.of(context).colorScheme.primary,
         onPressed: () {
-          // Navigator.of(context).push(
-          //   MaterialPageRoute(builder: (context) => const AddMemberPage()),
-          // );
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => const AddCategoryPage()),
+          );
         },
         child: Icon(
           Icons.category,
