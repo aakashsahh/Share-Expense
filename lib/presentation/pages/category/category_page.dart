@@ -114,7 +114,7 @@ class _CategoryPageState extends State<CategoryPage> {
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 0.0),
+          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -215,7 +215,7 @@ class _CategoryPageState extends State<CategoryPage> {
               //     ),
               //   ],
               // ),
-              const SizedBox(height: 34),
+              //const SizedBox(height: 34),
               // Text(
               //   isExpense ? "Expense Categories" : "Income Categories",
               //   style: TextStyle(
@@ -242,7 +242,7 @@ class _CategoryPageState extends State<CategoryPage> {
                               crossAxisCount: 2,
                               mainAxisSpacing: 16,
                               crossAxisSpacing: 16,
-                              childAspectRatio: 1.4,
+                              //childAspectRatio: 1.1,
                             ),
                         itemBuilder: (context, index) {
                           final category = categories[index];
@@ -279,6 +279,8 @@ class _CategoryPageState extends State<CategoryPage> {
                                 vertical: 16,
                               ),
                               child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   CircleAvatar(
                                     radius: 24,
@@ -298,7 +300,7 @@ class _CategoryPageState extends State<CategoryPage> {
                                         .textTheme
                                         .bodyLarge!
                                         .copyWith(color: colorScheme.onSurface),
-
+                                    textAlign: TextAlign.center,
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
                                   ),

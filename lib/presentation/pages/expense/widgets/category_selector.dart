@@ -152,13 +152,18 @@ class _CategorySelectorState extends State<CategorySelector> {
 
                 // Grid Categories (Dynamic with Bloc)
                 Expanded(
-                  child: GridView.count(
-                    crossAxisCount: 4,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 24,
-                    children: widget.categories
-                        .map((category) => _buildCategoryGridItem(category))
-                        .toList(),
+                  child: GridView.builder(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 4,
+                          crossAxisSpacing: 16,
+                          mainAxisSpacing: 24,
+                          mainAxisExtent:
+                              100, // 👈 enough height for icon + 2 lines
+                        ),
+                    itemCount: widget.categories.length,
+                    itemBuilder: (_, i) =>
+                        _buildCategoryGridItem(widget.categories[i]),
                   ),
                 ),
               ],
@@ -171,34 +176,47 @@ class _CategorySelectorState extends State<CategorySelector> {
 
   Widget _buildCategoryGridItem(Category category) {
     return GestureDetector(
-      onTap: () {
-        widget.onCategorySelected(category);
-      },
-      child: Column(
-        // mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Color(category.color).withValues(alpha: 0.3),
-            ),
-            child: Icon(
-              category.icon, // IconData reconstructed from DB
-              color: Color(category.color),
-              size: 28,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            category.name,
-            style: const TextStyle(fontSize: 12),
-            overflow: TextOverflow.ellipsis,
-            maxLines: 2,
-            textAlign: TextAlign.center,
-          ),
-        ],
+      onTap: () => widget.onCategorySelected(category),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Color(category.color).withValues(alpha: 0.3),
+                ),
+                child: Icon(
+                  category.icon,
+                  color: Color(category.color),
+                  size: 28,
+                ),
+              ),
+              const SizedBox(height: 6),
+              SizedBox(
+                width: constraints.maxWidth, // 👈 use full cell width
+                height: 34, // 👈 ~2 lines at 12sp (stable)
+                child: Text(
+                  category.name,
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  softWrap: true,
+                  style: const TextStyle(fontSize: 12, height: 1.2),
+                  // Optional for perfectly consistent line height:
+                  strutStyle: const StrutStyle(
+                    fontSize: 12,
+                    height: 1.2,
+                    forceStrutHeight: true,
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
