@@ -9,10 +9,10 @@ import 'package:share_expenses/presentation/bloc/dashboard/bloc/dashboard_bloc.d
 import 'package:share_expenses/presentation/bloc/expense/bloc/expense_bloc.dart';
 import 'package:share_expenses/presentation/bloc/fund/bloc/fund_bloc.dart';
 import 'package:share_expenses/presentation/bloc/member/bloc/member_bloc.dart';
+import 'package:share_expenses/presentation/splash_page.dart';
 
 import 'core/theme/app_theme.dart';
 import 'injection_container.dart' as di;
-import 'presentation/pages/dashboard/dashboard_page.dart';
 
 late Directory appDocDir;
 
@@ -46,12 +46,12 @@ class ExpenseSharingApp extends StatelessWidget {
         BlocProvider(create: (_) => di.sl<CategoryBloc>()),
       ],
       child: MaterialApp(
-        title: 'Expense Sharing',
+        title: 'Share Expense',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.lightTheme(),
         darkTheme: AppTheme.darkTheme(),
         themeMode: ThemeMode.light,
-        home: DashboardPage(),
+        home: SplashScreen(),
       ),
     );
   }
