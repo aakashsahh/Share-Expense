@@ -9,7 +9,6 @@ class IconSelectorPage extends StatefulWidget {
 }
 
 class _IconSelectorPageState extends State<IconSelectorPage> {
-  // the sections and their corresponding icons
   final Map<String, List<IconData>> iconSections = {
     'Subscriptions & Streaming': [
       Icons.subscriptions,
@@ -164,7 +163,6 @@ class _IconSelectorPageState extends State<IconSelectorPage> {
       Icons.volunteer_activism_outlined,
       Icons.campaign,
     ],
-
     'Other': [
       Icons.handyman,
       Icons.star,
@@ -186,13 +184,15 @@ class _IconSelectorPageState extends State<IconSelectorPage> {
       Icons.tune,
     ],
   };
-  // variable to keep track of the selected icon index
+
   int? selectedIndex;
+  String searchQuery = '';
+  final TextEditingController _searchController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
     if (widget.initialSelectedIcon != null) {
-      // Find the index of the initial selected icon
       int indexCounter = 0;
       for (var icons in iconSections.values) {
         for (var icon in icons) {
@@ -208,133 +208,370 @@ class _IconSelectorPageState extends State<IconSelectorPage> {
   }
 
   @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  Map<String, List<IconData>> get filteredSections {
+    if (searchQuery.isEmpty) return iconSections;
+
+    Map<String, List<IconData>> filtered = {};
+    iconSections.forEach((section, icons) {
+      List<IconData> matchingIcons = icons.where((icon) {
+        String iconName = icon.toString().toLowerCase();
+        return iconName.contains(searchQuery.toLowerCase()) ||
+            section.toLowerCase().contains(searchQuery.toLowerCase());
+      }).toList();
+
+      if (matchingIcons.isNotEmpty) {
+        filtered[section] = matchingIcons;
+      }
+    });
+    return filtered;
+  }
+
+  void _selectIcon() {
+    if (selectedIndex != null) {
+      IconData? selectedIcon;
+      int indexCounter = 0;
+
+      for (var entry in iconSections.entries) {
+        for (var icon in entry.value) {
+          if (indexCounter == selectedIndex) {
+            selectedIcon = icon;
+            break;
+          }
+          indexCounter++;
+        }
+        if (selectedIcon != null) break;
+      }
+      Navigator.pop(context, selectedIcon);
+    } else {
+      Navigator.pop(context, null);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    int globalIndex = 0;
-    var theme = Theme.of(context);
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    // Calculate optimal grid dimensions based on screen width
+    final crossAxisCount = screenWidth > 600
+        ? 8
+        : screenWidth > 400
+        ? 6
+        : 5;
+    final iconSize =
+        (screenWidth - 32 - (crossAxisCount - 1) * 8) / crossAxisCount;
+
     return Scaffold(
-      // appBar: CustomAppBar(title: 'Choose Icon'),
+      backgroundColor: colorScheme.surface,
       appBar: AppBar(
+        elevation: 0,
+        backgroundColor: colorScheme.surface,
+        surfaceTintColor: Colors.transparent,
         title: Text('Select Icon'),
-        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         actions: [
-          TextButton(
-            onPressed: () {
-              if (selectedIndex != null) {
-                IconData? selectedIcon;
-                int indexCounter = 0;
-
-                for (var entry in iconSections.entries) {
-                  for (var icon in entry.value) {
-                    if (indexCounter == selectedIndex) {
-                      selectedIcon = icon;
-                      break;
-                    }
-                    indexCounter++;
-                  }
-                  if (selectedIcon != null) break;
-                }
-
-                Navigator.pop(context, selectedIcon); // Sends the selected icon
-              } else {
-                Navigator.pop(context, null); // No selection made, send null
-              }
-            },
-            //_saveExpense,
-            child: Text(
+          FilledButton(
+            onPressed: selectedIndex != null ? _selectIcon : null,
+            style: FilledButton.styleFrom(
+              backgroundColor: selectedIndex != null
+                  ? colorScheme.primary
+                  : colorScheme.outline.withValues(alpha: 0.3),
+              foregroundColor: selectedIndex != null
+                  ? colorScheme.onPrimary
+                  : colorScheme.outline,
+              minimumSize: const Size(80, 36),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+            ),
+            child: const Text(
               'Done',
-              // _isEditing ? 'Update' : 'Save',
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.primary,
-                fontWeight: FontWeight.bold,
+              style: TextStyle(fontWeight: FontWeight.w600),
+            ),
+          ),
+          const SizedBox(width: 16),
+        ],
+      ),
+      body: Column(
+        children: [
+          // Search Bar
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+            child: SearchBar(
+              controller: _searchController,
+              hintText: 'Search icons...',
+              leading: Icon(Icons.search, color: colorScheme.onSurfaceVariant),
+              trailing: searchQuery.isNotEmpty
+                  ? [
+                      IconButton(
+                        icon: Icon(
+                          Icons.clear,
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                        onPressed: () {
+                          _searchController.clear();
+                          setState(() {
+                            searchQuery = '';
+                          });
+                        },
+                      ),
+                    ]
+                  : null,
+              onChanged: (value) {
+                setState(() {
+                  searchQuery = value;
+                });
+              },
+              backgroundColor: WidgetStatePropertyAll(
+                colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+              ),
+              elevation: const WidgetStatePropertyAll(0),
+              shape: WidgetStatePropertyAll(
+                RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(28),
+                  side: BorderSide(
+                    color: colorScheme.outline.withValues(alpha: 0.2),
+                  ),
+                ),
               ),
             ),
           ),
-        ],
-      ),
-      body: ListView(
-        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        children: iconSections.entries.map((section) {
-          final widgets = <Widget>[];
 
-          widgets.add(
-            Text(
-              section.key,
-              style: theme.textTheme.titleMedium!.copyWith(
-                color: theme.colorScheme.primary,
+          // Selected Icon Preview (if any)
+          if (selectedIndex != null) ...[
+            Container(
+              margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: colorScheme.primaryContainer.withValues(alpha: 0.5),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: colorScheme.primary.withValues(alpha: 0.3),
+                ),
               ),
-            ),
-          );
-          widgets.add(SizedBox(height: 12));
-          widgets.add(
-            Wrap(
-              spacing: 16,
-              runSpacing: 12,
-              children: section.value.map((icon) {
-                final currentIndex = globalIndex++;
-                final isSelected = selectedIndex == currentIndex;
-                return GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      selectedIndex = currentIndex;
-                    });
-                  },
-                  child: CircleAvatar(
-                    radius: 26,
-                    backgroundColor: isSelected
-                        ? theme.colorScheme.primary
-                        : theme.colorScheme.surfaceContainerHighest,
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: colorScheme.primary,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                     child: Icon(
-                      icon,
-                      color: isSelected
-                          ? theme.colorScheme.onPrimary
-                          : theme.colorScheme.onSurface,
+                      _getSelectedIcon(),
+                      color: colorScheme.onPrimary,
+                      size: 24,
                     ),
                   ),
-                );
-              }).toList(),
+                  const SizedBox(width: 12),
+                  Text(
+                    'Selected Icon',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      color: colorScheme.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          );
-          widgets.add(SizedBox(height: 24));
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: widgets,
-          );
-        }).toList(),
+          ],
+
+          // Icons Grid
+          Expanded(
+            child: filteredSections.isEmpty
+                ? Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.search_off,
+                          size: 64,
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'No icons found',
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Try adjusting your search',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: colorScheme.onSurface.withValues(alpha: 0.4),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                : ListView.builder(
+                    padding: const EdgeInsets.only(bottom: 16),
+                    itemCount: filteredSections.length,
+                    itemBuilder: (context, sectionIndex) {
+                      final entry = filteredSections.entries.elementAt(
+                        sectionIndex,
+                      );
+                      final sectionTitle = entry.key;
+                      final sectionIcons = entry.value;
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Section Header
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 4,
+                                  height: 20,
+                                  decoration: BoxDecoration(
+                                    color: colorScheme.primary,
+                                    borderRadius: BorderRadius.circular(2),
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Text(
+                                    sectionTitle,
+                                    style: theme.textTheme.titleMedium
+                                        ?.copyWith(
+                                          color: colorScheme.primary,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                  ),
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 4,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: colorScheme.primaryContainer
+                                        .withValues(alpha: 0.5),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Text(
+                                    '${sectionIcons.length}',
+                                    style: theme.textTheme.labelSmall?.copyWith(
+                                      color: colorScheme.primary,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          // Icons Grid
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: GridView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              gridDelegate:
+                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: crossAxisCount,
+                                    crossAxisSpacing: 8,
+                                    mainAxisSpacing: 8,
+                                    childAspectRatio: 1,
+                                  ),
+                              itemCount: sectionIcons.length,
+                              itemBuilder: (context, iconIndex) {
+                                final icon = sectionIcons[iconIndex];
+                                final globalIndex = _getGlobalIndex(
+                                  sectionTitle,
+                                  iconIndex,
+                                );
+                                final isSelected = selectedIndex == globalIndex;
+
+                                return GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      selectedIndex = globalIndex;
+                                    });
+                                  },
+                                  child: AnimatedContainer(
+                                    duration: const Duration(milliseconds: 200),
+                                    curve: Curves.easeInOut,
+                                    decoration: BoxDecoration(
+                                      color: isSelected
+                                          ? colorScheme.primary
+                                          : colorScheme.surfaceContainerHighest
+                                                .withValues(alpha: 0.7),
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(
+                                        color: isSelected
+                                            ? colorScheme.primary
+                                            : colorScheme.outline.withValues(
+                                                alpha: 0.2,
+                                              ),
+                                        width: isSelected ? 2 : 1,
+                                      ),
+                                      boxShadow: isSelected
+                                          ? [
+                                              BoxShadow(
+                                                color: colorScheme.primary
+                                                    .withValues(alpha: 0.3),
+                                                blurRadius: 8,
+                                                offset: const Offset(0, 2),
+                                              ),
+                                            ]
+                                          : null,
+                                    ),
+                                    child: Icon(
+                                      icon,
+                                      color: isSelected
+                                          ? colorScheme.onPrimary
+                                          : colorScheme.onSurface,
+                                      size: iconSize * 0.4,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                        ],
+                      );
+                    },
+                  ),
+          ),
+        ],
       ),
-      // bottomNavigationBar: Padding(
-      //   padding: const EdgeInsets.all(16.0),
-      //   child: ElevatedButton.icon(
-      //     onPressed: () {
-      //       if (selectedIndex != null) {
-      //         IconData? selectedIcon;
-      //         int indexCounter = 0;
-
-      //         for (var entry in iconSections.entries) {
-      //           for (var icon in entry.value) {
-      //             if (indexCounter == selectedIndex) {
-      //               selectedIcon = icon;
-      //               break;
-      //             }
-      //             indexCounter++;
-      //           }
-      //           if (selectedIcon != null) break;
-      //         }
-
-      //         Navigator.pop(context, selectedIcon); // Sends the selected icon
-      //       } else {
-      //         Navigator.pop(context, null); // No selection made, send null
-      //       }
-      //     },
-      //     icon: Icon(Icons.check, size: 24),
-      //     label: Text("Done"),
-      //     style: ElevatedButton.styleFrom(
-      //       minimumSize: Size.fromHeight(50),
-      //       backgroundColor: Colors.teal[800],
-      //       foregroundColor: Colors.white,
-      //       textStyle: Theme.of(context).textTheme.headlineMedium,
-      //     ),
-      //   ),
-      // ),
     );
+  }
+
+  IconData? _getSelectedIcon() {
+    if (selectedIndex == null) return null;
+
+    int indexCounter = 0;
+    for (var entry in iconSections.entries) {
+      for (var icon in entry.value) {
+        if (indexCounter == selectedIndex) {
+          return icon;
+        }
+        indexCounter++;
+      }
+    }
+    return null;
+  }
+
+  int _getGlobalIndex(String sectionTitle, int localIndex) {
+    int globalIndex = 0;
+
+    for (var entry in iconSections.entries) {
+      if (entry.key == sectionTitle) {
+        return globalIndex + localIndex;
+      }
+      globalIndex += entry.value.length;
+    }
+    return globalIndex;
   }
 }
