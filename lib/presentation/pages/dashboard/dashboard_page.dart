@@ -7,6 +7,7 @@ import 'package:share_expenses/presentation/bloc/dashboard/bloc/dashboard_event.
 import 'package:share_expenses/presentation/bloc/dashboard/bloc/dashboard_state.dart';
 import 'package:share_expenses/presentation/bloc/member/bloc/member_bloc.dart';
 import 'package:share_expenses/presentation/bloc/member/bloc/member_event.dart';
+import 'package:share_expenses/presentation/pages/member/add_member_page.dart';
 import 'package:share_expenses/presentation/widgets/common/custom_drawer.dart';
 
 import 'widgets/balance_card.dart';
@@ -55,6 +56,15 @@ class _DashboardPageState extends State<DashboardPage>
         title: const Text('Share Expense'),
         centerTitle: true,
         actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => AddMemberPage()),
+              );
+            },
+            icon: Icon(Icons.group_add_outlined),
+          ),
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () {
