@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:share_expenses/presentation/pages/member/add_member_page.dart';
 
 import '../../../../data/models/member.dart';
 
@@ -19,30 +20,38 @@ class MemberSelectionWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (members.isEmpty) {
-      return Card(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              Icon(
-                Icons.person_add,
-                size: 48,
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'No members found',
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-              const SizedBox(height: 4),
-              Text(
-                'Add members first to create expenses',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+      return InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => AddMemberPage()),
+          );
+        },
+        child: Card(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                Icon(
+                  Icons.person_add,
+                  size: 48,
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
-                textAlign: TextAlign.center,
-              ),
-            ],
+                const SizedBox(height: 8),
+                Text(
+                  'No members found',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Click here to add members first to create expenses',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
           ),
         ),
       );
