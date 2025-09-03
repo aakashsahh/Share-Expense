@@ -34,9 +34,9 @@ class DatabaseHelper {
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
     // Handle database migrations here
-    if (oldVersion < 2) {
-      await db.execute("ALTER TABLE expenses ADD COLUMN category_id TEXT");
-    }
+    // if (oldVersion < 2) {
+    //   await db.execute("ALTER TABLE expenses ADD COLUMN category_id TEXT");
+    // }
   }
 
   Future<void> _createTables(Database db) async {
