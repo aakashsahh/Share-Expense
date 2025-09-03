@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:share_expenses/presentation/bloc/dashboard/bloc/dashboard_bloc.dart';
 import 'package:share_expenses/presentation/bloc/dashboard/bloc/dashboard_state.dart';
+import 'package:share_expenses/presentation/widgets/common/empty_state_widget.dart';
 
 import '../../../../core/utils/currency_formatter.dart';
 import '../../../widgets/common/loading_widget.dart';
@@ -21,6 +22,14 @@ class ReportTab extends StatelessWidget {
         }
 
         if (state is DashboardLoaded) {
+          final data = state.data;
+          if (data.categoryExpenses.isEmpty && data.memberBalances.isEmpty) {
+            return EmptyStateWidget(
+              icon: Icons.analytics_outlined,
+              title: 'No Reports Yet',
+              subtitle: 'Add transactions to view report',
+            );
+          }
           return SingleChildScrollView(
             padding: const EdgeInsets.all(16),
             child: Column(
